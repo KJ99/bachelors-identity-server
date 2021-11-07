@@ -1,11 +1,13 @@
 package pl.kj.bachelors.identity.application.dto.request;
 
+import io.swagger.annotations.ApiModel;
 import org.hibernate.validator.constraints.Length;
 import pl.kj.bachelors.identity.domain.constraint.FieldValueMatch;
 import pl.kj.bachelors.identity.domain.constraint.Password;
 
 import javax.validation.constraints.Email;
 
+@ApiModel
 @FieldValueMatch(field = "confirmPassword", target = "password", message = "ID.004")
 public class RegistrationRequest {
     @Email(message = "ID.001")

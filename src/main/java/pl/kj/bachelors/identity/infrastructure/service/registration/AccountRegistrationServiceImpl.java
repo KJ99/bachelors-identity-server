@@ -10,6 +10,10 @@ import pl.kj.bachelors.identity.domain.service.registration.AccountRegistrationS
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
+import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 public class AccountRegistrationServiceImpl implements AccountRegistrationService {
     private CreateUserService createUserService;
@@ -43,10 +47,10 @@ public class AccountRegistrationServiceImpl implements AccountRegistrationServic
 
         String code = null;
         String path = null;
-        if (specificMessage.contains("UN_EMAIL")) {
+        if (this.isMessageContaining(specificMessage, "UN_EMAIL")) {
             code = "ID.012";
             path = "email";
-        } else if (specificMessage.contains("UN_USERNAME")) {
+        } else if (this.isMessageContaining(specificMessage, "UN_USERNAME")) {
             code = "ID.011";
             path = "username";
         }
@@ -60,5 +64,12 @@ public class AccountRegistrationServiceImpl implements AccountRegistrationServic
         }
 
         return ex;
+    }
+
+    private boolean isMessageContaining(String message, String substring) {
+        Pattern pattern = Pattern.compile(String.format(".*%s.*", substring), Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(message);
+
+        return matcher.matches();
     }
 }

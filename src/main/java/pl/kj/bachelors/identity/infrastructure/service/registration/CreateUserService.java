@@ -1,8 +1,10 @@
 package pl.kj.bachelors.identity.infrastructure.service.registration;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import pl.kj.bachelors.identity.domain.config.PasswordConfig;
 import pl.kj.bachelors.identity.domain.model.User;
 import pl.kj.bachelors.identity.domain.service.registration.UserCreator;
 
@@ -10,6 +12,11 @@ import java.util.UUID;
 
 @Service
 public class CreateUserService implements UserCreator {
+    private final PasswordConfig config;
+
+    public CreateUserService(@Autowired PasswordConfig config) {
+        this.config = config;
+    }
 
     @Override
     public User createUser(
@@ -19,7 +26,7 @@ public class CreateUserService implements UserCreator {
             final String lastName,
             final String password
     ) {
-        String salt = BCrypt.gensalt(16);
+        String salt = BCrypt.gensalt(config.getSaltRounds());
 
         var user = new User();
         user.setUid(UUID.randomUUID().toString());

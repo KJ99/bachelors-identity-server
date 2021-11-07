@@ -1,5 +1,6 @@
 package pl.kj.bachelors.identity.application.controller;
 
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.NotImplementedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.kj.bachelors.identity.application.dto.request.RegistrationRequest;
+import pl.kj.bachelors.identity.application.dto.response.BasicCreatedResponse;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.application.exception.ConflictHttpException;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
