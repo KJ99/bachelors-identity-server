@@ -8,3 +8,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
+password:
+  min-length: 1
+  max-length: 100
+  salt-rounds: 2
+file-upload:
+  destination-dir: /tmp
+  max-size: 3145728
+  allowed-types: image/png
