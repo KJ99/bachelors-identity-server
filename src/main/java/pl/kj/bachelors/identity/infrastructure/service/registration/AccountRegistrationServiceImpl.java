@@ -16,9 +16,9 @@ import java.util.regex.Pattern;
 
 @Service
 public class AccountRegistrationServiceImpl implements AccountRegistrationService {
-    private CreateUserService createUserService;
-    private UserRepository userRepo;
-    private ApiConfig apiConfig;
+    private final CreateUserService createUserService;
+    private final UserRepository userRepo;
+    private final ApiConfig apiConfig;
 
     public AccountRegistrationServiceImpl(
             @Autowired CreateUserService createUserService,
@@ -67,9 +67,9 @@ public class AccountRegistrationServiceImpl implements AccountRegistrationServic
     }
 
     private boolean isMessageContaining(String message, String substring) {
-        Pattern pattern = Pattern.compile(String.format(".*%s.*", substring), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(substring, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(message);
 
-        return matcher.matches();
+        return matcher.find();
     }
 }

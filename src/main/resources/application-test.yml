@@ -11,8 +11,8 @@ spring:
 password:
   min-length: 1
   max-length: 100
-  salt-rounds: 2
+  salt-rounds: 8
 file-upload:
-  destination-dir: /tmp
+  destination-dir: src/main/resources/local
   max-size: 3145728
   allowed-types: image/png
