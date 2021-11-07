@@ -11,6 +11,11 @@ spring:
     username: root
     password: P@ssw0rd
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kj99dev
+    password: zaq1@WSX
 server:
   port: 8443
   ssl:

@@ -30,7 +30,6 @@ public class HealthCheckApiController extends BaseApiController {
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<HealthCheckResponse> getHealthCheck() {
         var report = this.healthCheckService.check();
-
         return ResponseEntity.ok(this.map(report, HealthCheckResponse.class));
     }
 }

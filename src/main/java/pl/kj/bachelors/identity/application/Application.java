@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.mail.javamail.JavaMailSender;
 import pl.kj.bachelors.identity.application.dto.response.PersonDto;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
@@ -28,9 +29,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.stream.Collectors;
 
-@SpringBootApplication(scanBasePackages = "pl.kj.bachelors.starter")
-@EnableJpaRepositories("pl.kj.bachelors.starter.infrastructure.repository")
-@EntityScan("pl.kj.bachelors.starter.domain.model")
+@SpringBootApplication(scanBasePackages = "pl.kj.bachelors")
+@EnableJpaRepositories("pl.kj.bachelors.identity.infrastructure.repository")
+@EntityScan("pl.kj.bachelors.identity.domain.model")
 @Configuration
 @EnableSwagger2
 public class Application {
