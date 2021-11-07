@@ -4,8 +4,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-  flyway:
-    enable: true
   datasource:
     url: jdbc:mysql://localhost:3316/example
     username: root
@@ -23,3 +21,11 @@ server:
     key-store-type: PKCS12
     key-store: classpath:local/keys/keyStore.p12
     key-store-password: P@ssw0rd
+file-upload:
+  destination-dir: C:\Users\kj199\Documents
+  max-size: 5242880 #5 MB
+  allowed-types: image/png, image/jpg
+password:
+  min-length: 6
+  max-length: 128
+  salt-rounds: 12

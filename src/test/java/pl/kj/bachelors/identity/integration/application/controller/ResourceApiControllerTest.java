@@ -3,8 +3,12 @@ package pl.kj.bachelors.identity.integration.application.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,6 +20,7 @@ import pl.kj.bachelors.identity.domain.model.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -28,8 +33,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ResourceApiController.class)
+
+@SpringBootTest
+@AutoConfigureMockMvc
 @ContextConfiguration(classes = { Application.class })
+@ComponentScan(basePackages = "pl.kj.bachelors.identity")
 public class ResourceApiControllerTest {
     @MockBean private FileUploader fileUploader;
     @MockBean private UploadedFileRepository uploadedFileRepository;
@@ -46,7 +54,6 @@ public class ResourceApiControllerTest {
         this.file = getFile();
         this.mediaTypes = new String[] { "application/pdf" };
         this.maxBytes = 5 * 1024;
-
 
         UploadedFile result = new UploadedFile();
         result.setFileName("randomname");
@@ -137,4 +144,5 @@ public class ResourceApiControllerTest {
                 (byte) 0x2D
         };
     }
+
 }

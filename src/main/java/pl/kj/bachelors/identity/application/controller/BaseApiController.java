@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.exception.*;
 import pl.kj.bachelors.identity.application.model.validation.ValidationViolation;
+import pl.kj.bachelors.identity.domain.service.ModelValidator;
 
 import java.nio.file.NoSuchFileException;
 import java.util.Collection;
@@ -18,10 +19,16 @@ import java.util.stream.Collectors;
 abstract class BaseApiController {
     protected final ModelMapper mapper;
     protected final String activeProfile;
+    protected final ModelValidator validator;
 
-    BaseApiController(@Autowired ModelMapper mapper, @Value("spring.profiles.active") String activeProfile) {
+    BaseApiController(
+            @Autowired ModelMapper mapper,
+            @Value("spring.profiles.active") String activeProfile,
+            @Autowired ModelValidator validator
+    ) {
         this.mapper = mapper;
         this.activeProfile = activeProfile;
+        this.validator = validator;
     }
 
     protected  <T> T map(Object source, Class<T> destinationType) {
@@ -82,5 +89,12 @@ abstract class BaseApiController {
 
     protected boolean isProduction() {
         return this.checkProfile("prod");
+    }
+
+    protected <T> void ensureThatModelIsValid(T model) throws BadRequestHttpException {
+        var violations = this.validator.validateModel(model);
+        if(violations.size() > 0) {
+            throw new BadRequestHttpException(violations);
+        }
     }
 }

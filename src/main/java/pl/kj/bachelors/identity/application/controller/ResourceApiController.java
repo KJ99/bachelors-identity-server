@@ -17,6 +17,7 @@ import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.application.exception.NotFoundHttpException;
 import pl.kj.bachelors.identity.domain.model.UploadedFile;
+import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 
@@ -40,9 +41,10 @@ public class ResourceApiController extends BaseApiController {
             @Autowired FileUploader fileUploadService,
             @Autowired UploadedFileRepository uploadedFileRepository,
             @Value("${file-upload.max-size}") int maxFileSize,
-            @Value("${file-upload.allowed-types}") String[] allowedMediaTypes
-    ) {
-        super(mapper, activeProfile);
+            @Value("${file-upload.allowed-types}") String[] allowedMediaTypes,
+            @Autowired ModelValidator validator
+            ) {
+        super(mapper, activeProfile, validator);
         this.fileUploadService = fileUploadService;
         this.uploadedFileRepository = uploadedFileRepository;
         this.maxFileSize = maxFileSize;

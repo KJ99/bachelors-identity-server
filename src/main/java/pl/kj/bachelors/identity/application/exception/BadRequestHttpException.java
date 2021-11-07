@@ -9,6 +9,12 @@ public class BadRequestHttpException extends BaseHttpException {
     protected int httpCode = 400;
     protected Collection<ValidationViolation> errors = new LinkedList<>();
 
+    public BadRequestHttpException() {}
+
+    public BadRequestHttpException(Collection<ValidationViolation> errors) {
+
+    }
+
     public Collection<ValidationViolation> getErrors() {
         return this.errors;
     }

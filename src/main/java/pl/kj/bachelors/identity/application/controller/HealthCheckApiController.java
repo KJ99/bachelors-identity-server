@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
 import pl.kj.bachelors.identity.application.service.HealthCheckService;
+import pl.kj.bachelors.identity.domain.service.ModelValidator;
 
 @RestController
 @RequestMapping(value = "/v1/health")
@@ -20,9 +21,10 @@ public class HealthCheckApiController extends BaseApiController {
     HealthCheckApiController(
             @Autowired ModelMapper mapper,
             @Value("spring.profiles.active") String activeProfile,
-            @Autowired HealthCheckService healthCheckService
-    ) {
-        super(mapper, activeProfile);
+            @Autowired HealthCheckService healthCheckService,
+            @Autowired ModelValidator validator
+            ) {
+        super(mapper, activeProfile, validator);
         this.healthCheckService = healthCheckService;
     }
 

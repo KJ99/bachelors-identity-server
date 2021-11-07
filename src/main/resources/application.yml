@@ -18,6 +18,18 @@ http:
   port: 8080
 
 file-upload:
-  destination-dir: C:\Users\kj199\Documents
-  max-size: 5242880 #5 MB
-  allowed-types: image/png, image/jpg
+  destination-dir:
+  max-size:
+  allowed-types:
+password:
+  min-length: 0
+  max-length: 0
+  salt-rounds: 0
+api:
+  errors:
+    ID.001: Provided value is not a valid email address
+    ID.002: Provided value is too short or too long
+    ID.003: Password should have length between 6 and 128 characters, at least one uppercase letter, lowercase letter, digit and special character
+    ID.004: Passwords are not match
+    ID.011: This user name is already taken
+    ID.012: This email address is already taken

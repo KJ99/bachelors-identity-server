@@ -5,7 +5,7 @@ public class ValidationViolation {
     private final String message;
     private final String code;
 
-    public ValidationViolation(String message, String path, String code) {
+    public ValidationViolation(String message, String code, String path) {
         this.message = message;
         this.path = path;
         this.code = code;
