@@ -8,6 +8,7 @@ spring:
     validate-on-migrate: true
     locations: classpath:db/migration
   mail:
+    from: testmail@test.pl
     properties:
       mail:
         smtp:

@@ -5,71 +5,46 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kj.bachelors.identity.application.exception.ConflictHttpException;
-import pl.kj.bachelors.identity.application.model.validation.ValidationViolation;
+import pl.kj.bachelors.identity.domain.model.UserVerification;
 import pl.kj.bachelors.identity.domain.service.registration.AccountRegistrationService;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
+import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationRepository;
 
-import java.nio.file.Path;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class AccountRegistrationServiceImpl implements AccountRegistrationService {
     private final CreateUserService createUserService;
     private final UserRepository userRepo;
     private final ApiConfig apiConfig;
+    private final AccountVerificationService verificationService;
+    private final UserVerificationRepository verificationRepository;
 
     public AccountRegistrationServiceImpl(
             @Autowired CreateUserService createUserService,
             @Autowired UserRepository userRepo,
-            @Autowired ApiConfig apiConfig
-    ) {
+            @Autowired ApiConfig apiConfig,
+            @Autowired AccountVerificationService verificationService,
+            @Autowired UserVerificationRepository verificationRepository) {
         this.createUserService = createUserService;
         this.userRepo = userRepo;
         this.apiConfig = apiConfig;
+        this.verificationService = verificationService;
+        this.verificationRepository = verificationRepository;
     }
 
     @Override
-    @Transactional(rollbackFor = ConflictHttpException.class)
-    public void registerAccount(String email, String username, String firstName, String lastName, String password) throws ConflictHttpException {
+    @Transactional(rollbackFor = DataIntegrityViolationException.class)
+    public UserVerification registerAccount(String email, String username, String firstName, String lastName, String password) throws ExecutionException, InterruptedException {
         var user = this.createUserService.createUser(email, username, firstName, lastName, password);
+
         this.userRepo.save(user);
-        try {
-            this.userRepo.flush();
-        } catch (DataIntegrityViolationException ex) {
-            throw createConflictException(ex);
-        }
-    }
 
-    private ConflictHttpException createConflictException(DataIntegrityViolationException source) {
-        String specificMessage = source.getMostSpecificCause().getMessage();
+        UserVerification verification = this.verificationService.createVerification(user);
 
-        String code = null;
-        String path = null;
-        if (this.isMessageContaining(specificMessage, "UN_EMAIL")) {
-            code = "ID.012";
-            path = "email";
-        } else if (this.isMessageContaining(specificMessage, "UN_USERNAME")) {
-            code = "ID.011";
-            path = "username";
-        }
+        this.verificationRepository.save(verification);
 
-        String message = this.apiConfig.getErrors().get(code);
-
-        var ex = new ConflictHttpException();
-
-        if(path != null) {
-            ex.setError(new ValidationViolation(message, code, path));
-        }
-
-        return ex;
-    }
-
-    private boolean isMessageContaining(String message, String substring) {
-        Pattern pattern = Pattern.compile(substring, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-        Matcher matcher = pattern.matcher(message);
-
-        return matcher.find();
+        return verificationService.createVerification(user);
     }
 }

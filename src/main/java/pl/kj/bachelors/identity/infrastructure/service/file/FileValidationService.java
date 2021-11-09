@@ -3,7 +3,7 @@ package pl.kj.bachelors.identity.infrastructure.service.file;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
-import pl.kj.bachelors.identity.application.model.validation.ValidationViolation;
+import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.service.file.FileValidator;
 
 import java.util.ArrayList;

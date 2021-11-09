@@ -2,7 +2,7 @@ package pl.kj.bachelors.identity.infrastructure.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.kj.bachelors.identity.application.model.validation.ValidationViolation;
+import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
 

@@ -1,6 +1,6 @@
 package pl.kj.bachelors.identity.application.exception;
 
-import pl.kj.bachelors.identity.application.model.validation.ValidationViolation;
+import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 
 public class ConflictHttpException extends BaseHttpException {
     protected final int httpCode = 409;

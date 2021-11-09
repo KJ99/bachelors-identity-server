@@ -1,6 +1,6 @@
 package pl.kj.bachelors.identity.domain.service;
 
-import pl.kj.bachelors.identity.application.model.validation.ValidationViolation;
+import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 
 import java.util.Collection;
 

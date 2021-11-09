@@ -24,6 +24,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -33,11 +34,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 import pl.kj.bachelors.identity.application.dto.response.PersonDto;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
+import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.SingleCheckResponse;
 import pl.kj.bachelors.identity.application.model.HealthCheckResult;
 import pl.kj.bachelors.identity.application.model.SingleCheckResult;
 import pl.kj.bachelors.identity.domain.model.UploadedFile;
+import pl.kj.bachelors.identity.domain.model.UserVerification;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
@@ -58,6 +61,7 @@ import javax.sql.DataSource;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 @SpringBootApplication(scanBasePackages = "pl.kj.bachelors")
@@ -127,13 +131,20 @@ public class Application {
 			}
 		});
 
+		mapper.addMappings(new PropertyMap<UserVerification, UserVerificationResponse>() {
+			@Override
+			protected void configure() {
+				map().setVerificationToken(source.getToken());
+			}
+		});
+
 		return mapper;
 	}
 
 	@Bean
 	public DataSource dataSource(Environment env){
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(env.getProperty("spring.datasource.driver-class-name"));
+		dataSource.setDriverClassName(env.getProperty("spring.datasource.driver-class-name", ""));
 		dataSource.setUrl(env.getProperty("spring.datasource.url"));
 		dataSource.setUsername(env.getProperty("spring.datasource.username"));
 		dataSource.setPassword(env.getProperty("spring.datasource.password"));

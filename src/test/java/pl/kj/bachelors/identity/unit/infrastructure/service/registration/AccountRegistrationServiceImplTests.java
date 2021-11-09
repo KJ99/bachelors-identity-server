@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionSystemException;
@@ -14,9 +15,9 @@ import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.service.registration.AccountRegistrationServiceImpl;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = { Application.class })
@@ -44,7 +45,7 @@ public class AccountRegistrationServiceImplTests {
     }
 
     @Test
-    public void testRegisterAccount_CorrectData() throws ConflictHttpException {
+    public void testRegisterAccount_CorrectData() throws ExecutionException, InterruptedException {
         final String email = "some-other-email@foobar.com";
         final String username = "foobaroo";
         final String firstName = "first";
@@ -66,17 +67,9 @@ public class AccountRegistrationServiceImplTests {
         final String lastName = "last";
         final String password = "hello";
 
-        Throwable thrown = catchThrowable(() -> {
-            this.service.registerAccount(email, username, firstName, lastName, password);
-        });
-
-        assertThat(thrown).isInstanceOf(ConflictHttpException.class);
-
-        ConflictHttpException ex = (ConflictHttpException) thrown;
-
-        assertThat(ex.getError()).isNotNull();
-        assertThat(ex.getError().getCode()).isEqualTo("ID.011");
-        assertThat(ex.getError().getPath()).isEqualTo("username");
+        assertThatThrownBy(() ->
+                        this.service.registerAccount(email, username, firstName, lastName, password)
+                ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -87,15 +80,8 @@ public class AccountRegistrationServiceImplTests {
         final String lastName = "last";
         final String password = "hello";
 
-        Throwable thrown = catchThrowable(() -> {
-            this.service.registerAccount(email, username, firstName, lastName, password);
-        });
-        assertThat(thrown).isInstanceOf(ConflictHttpException.class);
-
-        ConflictHttpException ex = (ConflictHttpException) thrown;
-
-        assertThat(ex.getError()).isNotNull();
-        assertThat(ex.getError().getCode()).isEqualTo("ID.012");
-        assertThat(ex.getError().getPath()).isEqualTo("email");
+        assertThatThrownBy(() ->
+                this.service.registerAccount(email, username, firstName, lastName, password)
+        ).isInstanceOf(DataIntegrityViolationException.class);
     }
 }
