@@ -11,12 +11,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
 import pl.kj.bachelors.identity.application.exception.*;
+import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
 import pl.kj.bachelors.identity.domain.exception.JwtInvalidException;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
+import pl.kj.bachelors.identity.domain.exception.WrongCredentialsException;
+import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 
 import java.nio.file.NoSuchFileException;
@@ -101,7 +105,7 @@ abstract class BaseApiController {
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(ForbiddenHttpException.class)
-    protected ResponseEntity<GenericErrorResponse> handleForbidden(ForbiddenHttpException ex) {
+    protected ResponseEntity<?> handleForbidden(ForbiddenHttpException ex) {
         var resp = this.map(ex, GenericErrorResponse.class);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resp);
     }
@@ -109,8 +113,27 @@ abstract class BaseApiController {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = { ExpiredJwtException.class, MalformedJwtException.class, JwtInvalidException.class })
     protected ResponseEntity<?> handleJwtReject(Throwable ex) {
-        var resp = this.map(ex, GenericErrorResponse.class);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = {AccountNotVerifiedException.class})
+    protected ResponseEntity<?> handleAccountNotVerified(AccountNotVerifiedException ex) {
+        String detailMessage = this.apiConfig.getErrors().get(ex.getCode());
+        var res = new GenericErrorResponse<UserVerificationResponse>();
+        res.setDetailCode(ex.getCode());
+        res.setDetailMessage(detailMessage);
+        if(ex.getLatestVerification() != null) {
+            res.setAdditionalData(this.map(ex.getLatestVerification(), UserVerificationResponse.class));
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+    }
+
+    @ExceptionHandler(value = {WrongCredentialsException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<?> handleWrongCredentials(WrongCredentialsException ex) {
+        return ResponseEntity.badRequest().build();
     }
 
     private boolean checkProfile(String profile) {

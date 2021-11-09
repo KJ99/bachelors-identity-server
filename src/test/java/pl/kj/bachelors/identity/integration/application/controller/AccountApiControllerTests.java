@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.kj.bachelors.identity.application.Application;
+import pl.kj.bachelors.identity.domain.config.PasswordConfig;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
@@ -35,6 +37,7 @@ public class AccountApiControllerTests {
 
     @Autowired
     private UserVerificationRepository verificationRepository;
+
 
     @Test
     public void testPost_Created() throws Exception {
@@ -170,6 +173,7 @@ public class AccountApiControllerTests {
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
+
 
     private User loadSampleUser() {
         User user = new User();

@@ -25,10 +25,12 @@ import org.springframework.validation.beanvalidation.SpringConstraintValidatorFa
 import pl.kj.bachelors.identity.application.dto.response.ProfileResponse;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
+import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.SingleCheckResponse;
 import pl.kj.bachelors.identity.application.model.HealthCheckResult;
 import pl.kj.bachelors.identity.application.model.SingleCheckResult;
+import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;

@@ -44,11 +44,9 @@ public class RefreshTokenService implements TokenRefresher {
             payload.setRefreshToken(this.generationService.generateRefreshToken(user));
             payload.setTokenType(this.jwtConfig.getType());
 
-            result.setSuccess(true);
             result.setDetail(AuthResultDetail.SUCCESS);
             result.setPayload(payload);
         } catch (JwtInvalidException | NotFoundException | IllegalAccessException e) {
-            result.setSuccess(false);
             result.setDetail(AuthResultDetail.INVALID_TOKEN);
         }
 

@@ -4,13 +4,22 @@ import io.swagger.annotations.ApiModel;
 
 @ApiModel
 public class LoginResponse {
-    private ProfileResponse profile;
+    private ProfileResponse user;
+    private TokenResponse token;
 
-    public ProfileResponse getProfile() {
-        return profile;
+    public ProfileResponse getUser() {
+        return user;
     }
 
-    public void setProfile(ProfileResponse profile) {
-        this.profile = profile;
+    public void setUser(ProfileResponse user) {
+        this.user = user;
+    }
+
+    public TokenResponse getToken() {
+        return token;
+    }
+
+    public void setToken(TokenResponse token) {
+        this.token = token;
     }
 }

@@ -51,7 +51,7 @@ public class AccountRegistrationServiceImplTests {
 
         this.service.registerAccount(email, username, firstName, lastName, password);
 
-        Optional<User> user = this.userRepository.findByUserNameOrPassword(username);
+        Optional<User> user = this.userRepository.findByUserNameOrEmail(username);
 
         assertThat(user.isPresent()).isTrue();
     }

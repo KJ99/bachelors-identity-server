@@ -44,7 +44,6 @@ public class RefreshTokenServiceTests {
 
         AuthResult<TokenAuthPayload> result = this.service.refreshToken(access, refresh);
 
-        assertThat(result.isSuccess()).isTrue();
         assertThat(result.getDetail()).isEqualTo(AuthResultDetail.SUCCESS);
         assertThat(result.getPayload()).isNotNull();
         assertThat(result.getPayload().getTokenType()).isEqualTo(this.jwtConfig.getType());
@@ -68,7 +67,6 @@ public class RefreshTokenServiceTests {
 
         AuthResult<TokenAuthPayload> result = this.service.refreshToken(access, refresh);
 
-        assertThat(result.isSuccess()).isFalse();
         assertThat(result.getDetail()).isEqualTo(AuthResultDetail.INVALID_TOKEN);
         assertThat(result.getPayload()).isNull();
     }
@@ -85,7 +83,6 @@ public class RefreshTokenServiceTests {
 
         AuthResult<TokenAuthPayload> result = this.service.refreshToken(access, refresh);
 
-        assertThat(result.isSuccess()).isFalse();
         assertThat(result.getDetail()).isEqualTo(AuthResultDetail.INVALID_TOKEN);
         assertThat(result.getPayload()).isNull();
     }
