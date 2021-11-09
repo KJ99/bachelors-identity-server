@@ -1,5 +1,7 @@
 package pl.kj.bachelors.identity.application.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
 import pl.kj.bachelors.identity.application.exception.*;
+import pl.kj.bachelors.identity.domain.exception.JwtInvalidException;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
@@ -101,6 +104,13 @@ abstract class BaseApiController {
     protected ResponseEntity<GenericErrorResponse> handleForbidden(ForbiddenHttpException ex) {
         var resp = this.map(ex, GenericErrorResponse.class);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resp);
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = { ExpiredJwtException.class, MalformedJwtException.class, JwtInvalidException.class })
+    protected ResponseEntity<?> handleJwtReject(Throwable ex) {
+        var resp = this.map(ex, GenericErrorResponse.class);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     private boolean checkProfile(String profile) {

@@ -27,3 +27,11 @@ account-verification:
   token-suffix: '-eqwrr'
   content-length: 3
   expires_in_minutes: 360
+jwt:
+  secret: TestarrooSecret
+  algorithm: HS256
+  valid-time-in-minutes: 5
+  cookie:
+    name: test-token
+    valid-time-in-minutes: 10
+    domain: ''

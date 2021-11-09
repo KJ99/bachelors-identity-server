@@ -33,6 +33,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 import pl.kj.bachelors.identity.application.dto.response.PersonDto;
+import pl.kj.bachelors.identity.application.dto.response.ProfileResponse;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
@@ -40,6 +41,7 @@ import pl.kj.bachelors.identity.application.dto.response.health.SingleCheckRespo
 import pl.kj.bachelors.identity.application.model.HealthCheckResult;
 import pl.kj.bachelors.identity.application.model.SingleCheckResult;
 import pl.kj.bachelors.identity.domain.model.UploadedFile;
+import pl.kj.bachelors.identity.domain.model.User;
 import pl.kj.bachelors.identity.domain.model.UserVerification;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
@@ -135,6 +137,17 @@ public class Application {
 			@Override
 			protected void configure() {
 				map().setVerificationToken(source.getToken());
+			}
+		});
+
+		mapper.addMappings(new PropertyMap<User, ProfileResponse>() {
+			@Override
+			protected void configure() {
+				using(ctx -> {
+					User src = (User) ctx.getSource();
+					return String.format("%s %s", src.getFirstName(), src.getLastName());
+				}).map(source, destination.getName());
+				map().setId(source.getUid());
 			}
 		});
 

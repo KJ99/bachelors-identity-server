@@ -19,13 +19,20 @@ http:
   port: 8080
 
 file-upload:
-  destination-dir:
-  max-size:
-  allowed-types:
+  destination-dir: ''
+  max-size: ''
+  allowed-types: ''
 password:
   min-length: 0
   max-length: 0
   salt-rounds: 0
+jwt:
+  secret: ''
+  algorithm: ''
+  valid-time-in-minutes: 0
+  cookie:
+    name: ''
+    valid-time-in-minutes: 0
 api:
   errors:
     ID.001: Provided value is not a valid email address
