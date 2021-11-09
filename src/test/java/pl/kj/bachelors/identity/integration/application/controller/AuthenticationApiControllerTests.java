@@ -11,23 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.kj.bachelors.identity.application.Application;
-import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.config.JwtCookieConfig;
-import pl.kj.bachelors.identity.domain.model.JwtClaims;
 import pl.kj.bachelors.identity.domain.model.User;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
-
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.Cookie;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Calendar;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.head;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ContextConfiguration(classes = {Application.class})

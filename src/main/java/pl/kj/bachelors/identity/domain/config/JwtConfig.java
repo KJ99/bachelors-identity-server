@@ -9,6 +9,7 @@ public class JwtConfig {
     private String secret;
     private String algorithm;
     private long validTimeInMinutes;
+    private String type;
 
     public String getSecret() {
         return secret;
@@ -32,5 +33,13 @@ public class JwtConfig {
 
     public void setValidTimeInMinutes(long validTimeInMinutes) {
         this.validTimeInMinutes = validTimeInMinutes;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

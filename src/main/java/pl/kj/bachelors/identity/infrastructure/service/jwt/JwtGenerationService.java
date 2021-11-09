@@ -7,10 +7,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultJwtBuilder;
 import io.jsonwebtoken.impl.crypto.DefaultJwtSigner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.model.JwtClaims;
-import pl.kj.bachelors.identity.domain.model.JwtHeader;
 import pl.kj.bachelors.identity.domain.model.User;
 import pl.kj.bachelors.identity.domain.service.jwt.JwtGenerator;
 
@@ -28,18 +27,29 @@ public class JwtGenerationService implements JwtGenerator {
     }
 
     @Override
-    public String generateJwt(User user) {
+    public String generateAccessToken(User user) {
         Calendar issuedAt = Calendar.getInstance();
         Calendar expiresAt = (Calendar) issuedAt.clone();
         expiresAt.add(Calendar.MINUTE, (int) this.config.getValidTimeInMinutes());
 
+        return this.generateJwt(user, issuedAt, expiresAt);
+    }
+
+    @Override
+    public String generateRefreshToken(User user) {
+        return this.generateJwt(user, Calendar.getInstance(), null);
+    }
+
+    private String generateJwt(User user, Calendar issuedAt, @Nullable Calendar expiresAt) {
         var builder = new DefaultJwtBuilder();
         builder.setHeaderParam("alg", this.config.getAlgorithm());
         builder.setHeaderParam("typ", "JWT");
 
         builder.setSubject(user.getUid());
         builder.setIssuedAt(issuedAt.getTime());
-        builder.setExpiration(expiresAt.getTime());
+        if(expiresAt != null) {
+            builder.setExpiration(expiresAt.getTime());
+        }
 
         SignatureAlgorithm algorithm = SignatureAlgorithm.forName(config.getAlgorithm());
         SecretKeySpec spec = new SecretKeySpec(this.config.getSecret().getBytes(), config.getAlgorithm());

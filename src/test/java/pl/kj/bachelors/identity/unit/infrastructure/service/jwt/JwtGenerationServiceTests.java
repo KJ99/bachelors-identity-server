@@ -1,19 +1,17 @@
 package pl.kj.bachelors.identity.unit.infrastructure.service.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultJwtParser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.application.Application;
-import pl.kj.bachelors.identity.domain.model.JwtClaims;
+import pl.kj.bachelors.identity.domain.config.JwtConfig;
 import pl.kj.bachelors.identity.domain.model.User;
 import pl.kj.bachelors.identity.infrastructure.service.jwt.JwtGenerationService;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.Calendar;
 
@@ -26,20 +24,31 @@ public class JwtGenerationServiceTests {
     private JwtGenerationService service;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JwtConfig jwtConfig;
 
     @Test
-    public void testGenerateJwt() throws IOException {
+    public void testGenerateAccessToken() {
         User user = this.getUser();
 
-        String token = service.generateJwt(user);
+        String token = this.service.generateAccessToken(user);
         String[] chunks = token.split("\\.");
         assertThat(chunks).hasSize(3);
-        String json = new String(Base64.getDecoder().decode(chunks[1].getBytes()));
-        JwtClaims claims = this.objectMapper.readValue(json, JwtClaims.class);
+        Claims claims = this.getTokenClaims(token);
         long currentTimeInSeconds = Calendar.getInstance().getTimeInMillis() / 1000;
-        assertThat(claims.getSub()).isEqualTo(user.getUid());
-        assertThat(claims.getExp()).isGreaterThan(currentTimeInSeconds);
+        assertThat(claims.getSubject()).isEqualTo(user.getUid());
+        assertThat(claims.getExpiration().getTime()).isGreaterThan(currentTimeInSeconds);
+    }
+
+    @Test
+    public void testGenerateRefreshToken() {
+        User user = this.getUser();
+
+        String token = this.service.generateRefreshToken(user);
+        String[] chunks = token.split("\\.");
+        assertThat(chunks).hasSize(3);
+        Claims claims = this.getTokenClaims(token);
+        assertThat(claims.getSubject()).isEqualTo(user.getUid());
+        assertThat(claims.getExpiration()).isNull();
     }
 
     private User getUser() {
@@ -53,5 +62,11 @@ public class JwtGenerationServiceTests {
         user.setSalt("salt");
 
         return user;
+    }
+
+    private Claims getTokenClaims(String jwt) {
+        DefaultJwtParser parser = new DefaultJwtParser();
+        parser.setSigningKey(new SecretKeySpec(this.jwtConfig.getSecret().getBytes(), this.jwtConfig.getAlgorithm()));
+        return parser.parseClaimsJws(jwt).getBody();
     }
 }

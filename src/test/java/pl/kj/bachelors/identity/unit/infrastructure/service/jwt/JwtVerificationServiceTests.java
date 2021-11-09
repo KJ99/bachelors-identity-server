@@ -1,11 +1,8 @@
 package pl.kj.bachelors.identity.unit.infrastructure.service.jwt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultJwtBuilder;
-import io.jsonwebtoken.impl.DefaultJwtParser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,13 +10,9 @@ import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
 import pl.kj.bachelors.identity.domain.exception.JwtInvalidException;
-import pl.kj.bachelors.identity.domain.model.User;
-import pl.kj.bachelors.identity.infrastructure.service.jwt.JwtGenerationService;
-import pl.kj.bachelors.identity.infrastructure.service.jwt.JwtVerificationService;
+import pl.kj.bachelors.identity.infrastructure.service.jwt.ParseJwtService;
 
 import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.*;
@@ -28,7 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 @ContextConfiguration(classes = {Application.class})
 public class JwtVerificationServiceTests {
     @Autowired
-    private JwtVerificationService service;
+    private ParseJwtService service;
 
     @Autowired
     private JwtConfig jwtConfig;

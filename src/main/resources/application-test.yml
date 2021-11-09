@@ -31,6 +31,7 @@ jwt:
   secret: TestarrooSecret
   algorithm: HS256
   valid-time-in-minutes: 5
+  type: Bearer
   cookie:
     name: test-token
     valid-time-in-minutes: 10

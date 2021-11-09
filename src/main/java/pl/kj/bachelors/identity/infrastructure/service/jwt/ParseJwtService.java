@@ -7,17 +7,16 @@ import io.jsonwebtoken.impl.crypto.DefaultJwtSignatureValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.exception.JwtExpiredException;
 import pl.kj.bachelors.identity.domain.exception.JwtInvalidException;
-import pl.kj.bachelors.identity.domain.service.jwt.JwtVerifier;
+import pl.kj.bachelors.identity.domain.service.jwt.JwtParser;
 
 import javax.crypto.spec.SecretKeySpec;
 
 @Service
-public class JwtVerificationService implements JwtVerifier {
+public class ParseJwtService implements JwtParser {
     private final JwtConfig config;
 
-    public JwtVerificationService(@Autowired JwtConfig config) {
+    public ParseJwtService(@Autowired JwtConfig config) {
         this.config = config;
     }
 
@@ -40,7 +39,8 @@ public class JwtVerificationService implements JwtVerifier {
         return claims.getSubject();
     }
 
-    private Claims parseClaims(String jwt) {
+    @Override
+    public Claims parseClaims(String jwt) {
         SecretKeySpec spec = new SecretKeySpec(this.config.getSecret().getBytes(), this.config.getAlgorithm());
         DefaultJwtParser parser = new DefaultJwtParser();
         parser.setSigningKey(spec);
