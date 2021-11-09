@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = {Application.class})
-public class JwtVerificationServiceTests {
+public class ParseJwtServiceTests {
     @Autowired
     private ParseJwtService service;
 

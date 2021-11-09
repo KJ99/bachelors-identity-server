@@ -1,7 +1,7 @@
 package pl.kj.bachelors.identity.domain.service.registration;
 
 import pl.kj.bachelors.identity.application.exception.ConflictHttpException;
-import pl.kj.bachelors.identity.domain.model.UserVerification;
+import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 
 import java.util.concurrent.ExecutionException;
 

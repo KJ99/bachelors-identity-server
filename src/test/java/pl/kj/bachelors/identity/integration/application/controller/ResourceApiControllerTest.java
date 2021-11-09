@@ -3,9 +3,7 @@ package pl.kj.bachelors.identity.integration.application.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,13 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.kj.bachelors.identity.application.Application;
-import pl.kj.bachelors.identity.application.controller.ResourceApiController;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
-import pl.kj.bachelors.identity.domain.model.UploadedFile;
+import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -65,7 +61,7 @@ public class ResourceApiControllerTest {
     }
 
     @Test
-    public void testPost() throws BadRequestHttpException, Exception {
+    public void testPost() throws Exception {
         MvcResult mvcResult = mockMvc.perform(multipart("/v1/resources").file("file", this.file.getBytes()))
                 .andExpect(status().isCreated())
                 .andReturn();

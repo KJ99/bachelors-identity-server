@@ -2,8 +2,8 @@ package pl.kj.bachelors.identity.domain.service.registration;
 
 import javassist.NotFoundException;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
-import pl.kj.bachelors.identity.domain.model.User;
-import pl.kj.bachelors.identity.domain.model.UserVerification;
+import pl.kj.bachelors.identity.domain.model.entity.User;
+import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 
 import java.util.concurrent.ExecutionException;
 

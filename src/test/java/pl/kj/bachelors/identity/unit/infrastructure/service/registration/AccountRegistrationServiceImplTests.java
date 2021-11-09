@@ -5,12 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionSystemException;
 import pl.kj.bachelors.identity.application.Application;
-import pl.kj.bachelors.identity.application.exception.ConflictHttpException;
-import pl.kj.bachelors.identity.domain.model.User;
+import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.service.registration.AccountRegistrationServiceImpl;
 

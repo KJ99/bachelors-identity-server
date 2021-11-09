@@ -2,7 +2,7 @@ package pl.kj.bachelors.identity.infrastructure.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import pl.kj.bachelors.identity.domain.model.UploadedFile;
+import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 
 @Repository
 public interface UploadedFileRepository extends CrudRepository<UploadedFile, Integer> {

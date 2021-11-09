@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
-import pl.kj.bachelors.identity.domain.model.UploadedFile;
+import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.domain.service.file.FileValidator;
 
@@ -61,7 +61,7 @@ public class FileUploadService implements FileUploader {
     }
 
     private String generateFileName() {
-        String result = null;
+        String result;
         long timeInMillis = Calendar.getInstance().getTimeInMillis();
         long randomNumber = Double.valueOf(Math.random() * 1000000).longValue();
         String content = String.valueOf(timeInMillis).concat("_").concat(String.valueOf(randomNumber));

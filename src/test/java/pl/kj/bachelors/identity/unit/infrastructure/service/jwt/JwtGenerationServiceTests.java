@@ -8,11 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.model.User;
+import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.infrastructure.service.jwt.JwtGenerationService;
 
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
 import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.assertThat;

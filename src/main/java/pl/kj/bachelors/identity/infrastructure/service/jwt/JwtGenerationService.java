@@ -1,16 +1,13 @@
 package pl.kj.bachelors.identity.infrastructure.service.jwt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultJwtBuilder;
-import io.jsonwebtoken.impl.crypto.DefaultJwtSigner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.model.User;
+import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.service.jwt.JwtGenerator;
 
 import javax.crypto.spec.SecretKeySpec;

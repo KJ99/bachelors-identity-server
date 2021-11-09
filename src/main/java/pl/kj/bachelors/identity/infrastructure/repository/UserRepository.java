@@ -2,10 +2,9 @@ package pl.kj.bachelors.identity.infrastructure.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import pl.kj.bachelors.identity.domain.model.User;
+import pl.kj.bachelors.identity.domain.model.entity.User;
 
 import java.util.Optional;
 

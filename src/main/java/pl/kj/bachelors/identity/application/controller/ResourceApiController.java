@@ -17,7 +17,7 @@ import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.application.exception.NotFoundHttpException;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
-import pl.kj.bachelors.identity.domain.model.UploadedFile;
+import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;

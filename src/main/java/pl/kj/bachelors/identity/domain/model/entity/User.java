@@ -1,4 +1,6 @@
-package pl.kj.bachelors.identity.domain.model;
+package pl.kj.bachelors.identity.domain.model.entity;
+
+import pl.kj.bachelors.identity.domain.model.embeddable.Audit;
 
 import javax.persistence.*;
 

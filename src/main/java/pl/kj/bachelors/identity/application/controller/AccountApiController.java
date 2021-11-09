@@ -16,7 +16,7 @@ import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.application.exception.ConflictHttpException;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
-import pl.kj.bachelors.identity.domain.model.UserVerification;
+import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
 import pl.kj.bachelors.identity.domain.service.registration.AccountRegistrationService;

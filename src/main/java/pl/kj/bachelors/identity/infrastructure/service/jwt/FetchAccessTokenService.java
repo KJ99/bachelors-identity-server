@@ -20,9 +20,12 @@ public class FetchAccessTokenService implements AccessTokenFetcher {
 
     @Override
     public Optional<String> getAccessTokenFromRequest(HttpServletRequest request) {
+        String token = null;
         String headerValue = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String[] chunks = headerValue.split(" ");
-        String token = chunks.length > 0 && chunks[0].equals(this.config.getType()) ? chunks[1] : null;
+        if(headerValue != null) {
+            String[] chunks = headerValue.split(" ");
+            token = chunks.length > 0 && chunks[0].equals(this.config.getType()) ? chunks[1] : null;
+        }
         return Optional.ofNullable(token);
     }
 }

@@ -9,12 +9,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.kj.bachelors.identity.application.Application;
-import pl.kj.bachelors.identity.domain.model.User;
-import pl.kj.bachelors.identity.domain.model.UserVerification;
+import pl.kj.bachelors.identity.domain.model.entity.User;
+import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationRepository;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -173,12 +174,12 @@ public class AccountApiControllerTests {
     private User loadSampleUser() {
         User user = new User();
         user.setUid("uid-10");
-        user.setEmail("testmail-test@test.pl");
-        user.setUserName("testmail-test@test.pl");
+        user.setEmail(UUID.randomUUID().toString().concat("@testaroomail.mail"));
+        user.setUserName(UUID.randomUUID().toString());
         user.setFirstName("Abc");
         user.setLastName("Abc");
         user.setPassword("pass");
-        user.setSalt("salt");
+        user.setSalt(UUID.randomUUID().toString());
 
         this.userRepository.saveAndFlush(user);
 
