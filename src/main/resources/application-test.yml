@@ -27,6 +27,12 @@ account-verification:
   token-suffix: '-eqwrr'
   content-length: 3
   expires_in_minutes: 360
+password-reset:
+  token-prefix: 'R23R'
+  token-suffix: '-WEG2'
+  content-length: 3
+  expires_in_minutes: 360
+  pin-length: 3
 jwt:
   secret: TestarrooSecret
   algorithm: HS256

@@ -32,6 +32,16 @@ public class TokenGenerationService {
         return token.get();
     }
 
+    public String generateNumericToken(int length) {
+        Random random = new Random();
+        String[] pinElements = new String[length];
+        for(int i = 0; i < pinElements.length; i++) {
+            pinElements[i] = String.valueOf(random.nextInt(9));
+        }
+
+        return String.join("", pinElements);
+    }
+
     private String generateContent(final int length) {
         Random random = new Random();
         byte[] bytes = new byte[length];

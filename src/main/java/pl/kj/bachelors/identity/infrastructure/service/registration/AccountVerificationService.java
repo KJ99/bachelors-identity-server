@@ -48,14 +48,13 @@ public class AccountVerificationService implements AccountVerifier {
         UserVerification verification = new UserVerification();
         verification.setUser(user);
         verification.setToken(getToken());
-        verification.setPin(generatePin());
+        verification.setPin(this.tokenGenerator.generateNumericToken(6));
         verification.setExpiresAt(getExpiresAt());
 
         return verification;
     }
 
     @Override
-    @Transactional
     public void saveVerification(UserVerification verification) {
         this.verificationRepository.save(verification);
     }
@@ -73,16 +72,6 @@ public class AccountVerificationService implements AccountVerifier {
         expiresAt.add(Calendar.MINUTE, verificationConfig.getExpiresInMinutes());
 
         return expiresAt;
-    }
-
-    private String generatePin() {
-        Random random = new Random();
-        String[] pinElements = new String[6];
-        for(int i = 0; i < pinElements.length; i++) {
-            pinElements[i] = String.valueOf(random.nextInt(9));
-        }
-
-        return String.join("", pinElements);
     }
 
     @Override

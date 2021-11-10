@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import pl.kj.bachelors.identity.domain.model.entity.PasswordReset;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
 
@@ -23,10 +24,18 @@ public class MailSendService implements MailSender {
 
     @Override
     public void sendVerificationEmail(UserVerification verification) {
-        ExecutorService executor = Executors.newFixedThreadPool(3);
         String receiver = verification.getUser().getEmail();
         String content = String.format("Your verification PIN is %s", verification.getPin());
         String subject = "Account Verification";
+        SimpleMailMessage message = this.createPlainTextMessage(receiver, subject, content);
+        this.sendMessage(message, 3);
+    }
+
+    @Override
+    public void sendPasswordResetEmail(PasswordReset reset) {
+        String receiver = reset.getUser().getEmail();
+        String content = String.format("Your password reset PIN is %s", reset.getPin());
+        String subject = "Password reset";
         SimpleMailMessage message = this.createPlainTextMessage(receiver, subject, content);
         this.sendMessage(message, 3);
     }

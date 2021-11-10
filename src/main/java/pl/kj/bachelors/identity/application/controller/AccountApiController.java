@@ -65,6 +65,7 @@ public class AccountApiController extends BaseApiController {
     }
 
     @PostMapping("/verification/resend")
+    @Transactional
     public ResponseEntity<UserVerificationResponse> resendVerification(@RequestBody VerificationResendRequest request)
             throws NotFoundException, ExecutionException, InterruptedException {
         UserVerification verification = this.verificationService.createVerification(request.getEmail());

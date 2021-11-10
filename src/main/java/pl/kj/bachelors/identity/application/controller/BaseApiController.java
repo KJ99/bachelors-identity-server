@@ -15,11 +15,8 @@ import pl.kj.bachelors.identity.application.dto.response.UserVerificationRespons
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
 import pl.kj.bachelors.identity.application.exception.*;
-import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
-import pl.kj.bachelors.identity.domain.exception.JwtInvalidException;
-import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
+import pl.kj.bachelors.identity.domain.exception.*;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
-import pl.kj.bachelors.identity.domain.exception.WrongCredentialsException;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 
@@ -130,6 +127,12 @@ abstract class BaseApiController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
     }
 
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    protected ResponseEntity<?> handleAccessDenied() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
     @ExceptionHandler(value = {WrongCredentialsException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<?> handleWrongCredentials(WrongCredentialsException ex) {
@@ -155,7 +158,9 @@ abstract class BaseApiController {
     protected <T> void ensureThatModelIsValid(T model) throws BadRequestHttpException {
         var violations = this.validator.validateModel(model);
         if(violations.size() > 0) {
-            throw new BadRequestHttpException(violations);
+            var ex = new BadRequestHttpException();
+            ex.setErrors(violations);
+            throw ex;
         }
     }
 

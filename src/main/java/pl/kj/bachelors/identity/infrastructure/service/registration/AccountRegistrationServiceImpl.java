@@ -44,6 +44,6 @@ public class AccountRegistrationServiceImpl implements AccountRegistrationServic
 
         this.verificationRepository.save(verification);
 
-        return verificationService.createVerification(user);
+        return verification;
     }
 }
