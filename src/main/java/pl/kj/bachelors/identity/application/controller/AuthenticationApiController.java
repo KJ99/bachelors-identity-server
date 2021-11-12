@@ -1,7 +1,6 @@
 package pl.kj.bachelors.identity.application.controller;
 
 import javassist.NotFoundException;
-import org.apache.commons.lang3.NotImplementedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +32,7 @@ import pl.kj.bachelors.identity.domain.service.jwt.RefreshTokenManager;
 import pl.kj.bachelors.identity.domain.service.jwt.TokenRefresher;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
 import pl.kj.bachelors.identity.domain.service.registration.PasswordResetService;
+import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,17 +49,13 @@ public class AuthenticationApiController extends BaseApiController {
     private final MailSender mailer;
 
     AuthenticationApiController(
-            @Autowired ModelMapper mapper,
-            @Value("${spring.profiles.active}") String activeProfile,
-            @Autowired ModelValidator validator,
-            @Autowired ApiConfig apiConfig,
             @Autowired TokenRefresher tokenRefresher,
             @Autowired RefreshTokenManager refreshTokenManager,
             @Autowired AccessTokenFetcher accessTokenFetcher,
             @Autowired PasswordAuthenticator passwordAuthenticator,
             @Autowired PasswordResetService passwordResetService,
-            @Autowired MailSender mailer) {
-        super(mapper, activeProfile, validator, apiConfig);
+            @Autowired MailSender mailer
+    ) {
         this.tokenRefresher = tokenRefresher;
         this.refreshTokenManager = refreshTokenManager;
         this.accessTokenFetcher = accessTokenFetcher;

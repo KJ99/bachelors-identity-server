@@ -21,6 +21,7 @@ import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
+import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,16 +38,11 @@ public class ResourceApiController extends BaseApiController {
     private final String[] allowedMediaTypes;
 
     ResourceApiController(
-            @Autowired ModelMapper mapper,
-            @Value("spring.profiles.active") String activeProfile,
-            @Autowired ApiConfig apiConfig,
             @Autowired FileUploader fileUploadService,
             @Autowired UploadedFileRepository uploadedFileRepository,
             @Value("${file-upload.max-size}") int maxFileSize,
-            @Value("${file-upload.allowed-types}") String[] allowedMediaTypes,
-            @Autowired ModelValidator validator
-            ) {
-        super(mapper, activeProfile, validator, apiConfig);
+            @Value("${file-upload.allowed-types}") String[] allowedMediaTypes
+    ) {
         this.fileUploadService = fileUploadService;
         this.uploadedFileRepository = uploadedFileRepository;
         this.maxFileSize = maxFileSize;

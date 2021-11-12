@@ -2,10 +2,10 @@ package pl.kj.bachelors.identity.application.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.kj.bachelors.identity.domain.model.entity.User;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/ping")

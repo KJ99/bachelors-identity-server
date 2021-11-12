@@ -17,31 +17,38 @@ import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorRe
 import pl.kj.bachelors.identity.application.exception.*;
 import pl.kj.bachelors.identity.domain.exception.*;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
-import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
+import pl.kj.bachelors.identity.domain.model.entity.User;
+import pl.kj.bachelors.identity.domain.security.action.Action;
+import pl.kj.bachelors.identity.domain.security.voter.Voter;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
+import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.file.NoSuchFileException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 abstract class BaseApiController {
-    protected final ModelMapper mapper;
-    protected final String activeProfile;
-    protected final ModelValidator validator;
-    protected final ApiConfig apiConfig;
-
-    BaseApiController(
-            @Autowired ModelMapper mapper,
-            @Value("spring.profiles.active") String activeProfile,
-            @Autowired ModelValidator validator,
-            ApiConfig apiConfig) {
-        this.mapper = mapper;
-        this.activeProfile = activeProfile;
-        this.validator = validator;
-        this.apiConfig = apiConfig;
-    }
+    @Autowired
+    protected ModelMapper mapper;
+    @Value("${spring.profiles.active}")
+    protected String activeProfile;
+    @Autowired
+    protected ModelValidator validator;
+    @Autowired
+    protected ApiConfig apiConfig;
+    @Autowired
+    protected UserRepository userRepository;
+    @Autowired
+    protected HttpServletRequest currentRequest;
+    @Autowired
+    @SuppressWarnings("rawtypes")
+    protected Set<Voter> voters;
 
     protected  <T> T map(Object source, Class<T> destinationType) {
         return this.mapper.map(source, destinationType);
@@ -187,5 +194,31 @@ abstract class BaseApiController {
         Matcher matcher = pattern.matcher(message);
 
         return matcher.find();
+    }
+
+    protected Optional<User> getUser() {
+        String uid = (String) this.currentRequest.getAttribute("uid");
+
+        return uid != null ? this.userRepository.findById(uid) : Optional.empty();
+    }
+
+
+    @SuppressWarnings("unchecked")
+    protected <T> void ensureThatUserHasAccessToAction(T subject, Action action)
+            throws AccessDeniedException {
+        User user = this.getUser().orElseThrow(AccessDeniedException::new);
+        var voters = this.voters.stream()
+                .filter(
+                        voter ->
+                                voter.getSupportedSubjectType().equals(subject.getClass()) &&
+                                        Arrays.asList(voter.getSupportedActions())
+                                                .contains(action))
+                .collect(Collectors.toSet());
+
+        var result = voters.stream().allMatch(v -> v.vote(subject, action, user));
+
+        if(!result) {
+            throw new AccessDeniedException();
+        }
     }
 }

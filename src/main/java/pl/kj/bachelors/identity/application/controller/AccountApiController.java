@@ -21,6 +21,7 @@ import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
 import pl.kj.bachelors.identity.domain.service.registration.AccountRegistrationService;
 import pl.kj.bachelors.identity.domain.service.registration.AccountVerifier;
+import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
 import java.util.concurrent.ExecutionException;
 
@@ -31,14 +32,10 @@ public class AccountApiController extends BaseApiController {
     private final MailSender mailer;
     private final AccountVerifier verificationService;
     AccountApiController(
-            @Autowired ModelMapper mapper,
-            @Value("spring.profiles.active") String activeProfile,
-            @Autowired ModelValidator validator,
-            @Autowired ApiConfig apiConfig,
             @Autowired AccountRegistrationService service,
             @Autowired MailSender mailer,
-            @Autowired AccountVerifier verificationService) {
-        super(mapper, activeProfile, validator, apiConfig);
+            @Autowired AccountVerifier verificationService
+    ) {
         this.service = service;
         this.mailer = mailer;
         this.verificationService = verificationService;
