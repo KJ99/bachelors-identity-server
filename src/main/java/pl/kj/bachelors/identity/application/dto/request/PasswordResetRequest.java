@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import pl.kj.bachelors.identity.domain.constraint.FieldValueMatch;
 import pl.kj.bachelors.identity.domain.constraint.Password;
 
-@FieldValueMatch(field = "confirmPassword", target = "password", message = "ID.041")
+@FieldValueMatch(field = "confirmPassword", target = "password", message = "ID.004")
 @ApiModel
 public class PasswordResetRequest {
     private String token;

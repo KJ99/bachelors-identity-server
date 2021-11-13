@@ -46,7 +46,7 @@ abstract class BaseApiController {
     protected UserRepository userRepository;
     @Autowired
     protected HttpServletRequest currentRequest;
-    @Autowired
+    @Autowired(required = false)
     @SuppressWarnings("rawtypes")
     protected Set<Voter> voters;
 
