@@ -102,6 +102,12 @@ abstract class BaseApiController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(AggregatedApiError.class)
+    protected ResponseEntity<Collection<ValidationErrorResponse>> handleAggregatedApiError(AggregatedApiError ex) {
+        return ResponseEntity.badRequest().body(this.mapCollection(ex.getErrors(), ValidationErrorResponse.class));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationViolation.class)
     protected ResponseEntity<ValidationErrorResponse> handleRequestViolation(ValidationViolation ex) {
         return ResponseEntity.badRequest().body(this.map(ex, ValidationErrorResponse.class));

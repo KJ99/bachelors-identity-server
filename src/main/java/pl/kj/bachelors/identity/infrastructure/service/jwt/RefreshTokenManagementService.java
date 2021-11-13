@@ -21,10 +21,13 @@ public class RefreshTokenManagementService implements RefreshTokenManager {
 
     @Override
     public Optional<String> getFromRequest(HttpServletRequest request) {
-        Optional<Cookie> cookie = Arrays.stream(request.getCookies())
-                .filter(item -> item.getName().equals(this.config.getName()))
-                .findFirst();
-        String token = cookie.map(Cookie::getValue).orElse(null);
+        String token = null;
+        if(request.getCookies() != null) {
+            Optional<Cookie> cookie = Arrays.stream(request.getCookies())
+                    .filter(item -> item.getName().equals(this.config.getName()))
+                    .findFirst();
+            token = cookie.map(Cookie::getValue).orElse(null);
+        }
 
         return Optional.ofNullable(token);
     }

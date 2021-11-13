@@ -34,6 +34,7 @@ import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
+import pl.kj.bachelors.identity.domain.model.update.UserUpdateModel;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -128,6 +129,24 @@ public class Application {
 					return String.format("%s %s", src.getFirstName(), src.getLastName());
 				}).map(source, destination.getName());
 				map().setId(source.getUid());
+			}
+		});
+
+		mapper.addMappings(new PropertyMap<User, UserUpdateModel>() {
+			@Override
+			protected void configure() {
+				map().setUsername(source.getUserName());
+				using(ctx -> {
+					User src = (User) ctx.getSource();
+					return src.getPicture() != null ? src.getPicture().getId() : null;
+				}).map(source, destination.getPictureId());
+			}
+		});
+
+		mapper.addMappings(new PropertyMap<UserUpdateModel, User>() {
+			@Override
+			protected void configure() {
+				map().setUserName(source.getUsername());
 			}
 		});
 

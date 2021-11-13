@@ -15,6 +15,7 @@ import pl.kj.bachelors.identity.integration.BaseIntegrationTest;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,6 +92,85 @@ public class ProfileApiControllerTests extends BaseIntegrationTest {
                 put("/v1/profile/password")
                         .contentType("application/json")
                         .content(requestBody.getBytes(StandardCharsets.UTF_8))
-        ).andExpect(status().isUnauthorized()).andReturn();
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testPatch_NoContent() throws Exception {
+        String patchString = String.format(
+                "[" +
+                        "{\"op\": \"replace\", \"path\": \"/first_name\", \"value\": \"%s\"}," +
+                        "{\"op\": \"add\", \"path\": \"/picture_id\", \"value\": \"%d\"}" +
+                        "]",
+                "Roman",
+                1
+        );
+        String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateValidAccessToken("uid-active-1"));
+
+        this.mockMvc.perform(
+                patch("/v1/profile")
+                        .contentType("application/json")
+                        .content(patchString.getBytes(StandardCharsets.UTF_8))
+                        .header(HttpHeaders.AUTHORIZATION, auth)
+        ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testPatch_BadRequest() throws Exception {
+        String patchString = String.format(
+                "[" +
+                        "{\"op\": \"replace\", \"path\": \"/first_name\", \"value\": \"%s\"}," +
+                        "{\"op\": \"add\", \"path\": \"/picture_id\", \"value\": \"%d\"}" +
+                        "]",
+                "",
+                1
+        );
+        String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateValidAccessToken("uid-active-1"));
+
+        this.mockMvc.perform(
+                patch("/v1/profile")
+                        .contentType("application/json")
+                        .content(patchString.getBytes(StandardCharsets.UTF_8))
+                        .header(HttpHeaders.AUTHORIZATION, auth)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testPatch_Unauthorized() throws Exception {
+        String patchString = String.format(
+                "[" +
+                        "{\"op\": \"replace\", \"path\": \"/first_name\", \"value\": \"%s\"}," +
+                        "{\"op\": \"add\", \"path\": \"/picture_id\", \"value\": \"%d\"}" +
+                        "]",
+                "Roman",
+                1
+        );
+
+        this.mockMvc.perform(
+                patch("/v1/profile")
+                        .contentType("application/json")
+                        .content(patchString.getBytes(StandardCharsets.UTF_8))
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testPatch_Forbidden() throws Exception {
+        String patchString = String.format(
+                "[" +
+                        "{\"op\": \"replace\", \"path\": \"/first_name\", \"value\": \"%s\"}," +
+                        "{\"op\": \"add\", \"path\": \"/picture_id\", \"value\": \"%d\"}" +
+                        "]",
+                "Roman",
+                1
+        );
+        String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateExpiredAccessToken("uid-active-1"));
+
+        this.mockMvc.perform(
+                patch("/v1/profile")
+                        .contentType("application/json")
+                        .content(patchString.getBytes(StandardCharsets.UTF_8))
+                        .header(HttpHeaders.AUTHORIZATION, auth)
+        ).andExpect(status().isForbidden());
+
     }
 }
