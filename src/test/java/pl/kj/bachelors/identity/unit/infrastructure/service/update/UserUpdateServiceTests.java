@@ -43,7 +43,7 @@ public class UserUpdateServiceTests {
         String patchString = String.format(
                 "[" +
                         "{\"op\": \"replace\", \"path\": \"/first_name\", \"value\": \"%s\"}," +
-                        "{\"op\": \"add\", \"path\": \"/picture_id\", \"value\": \"%d\"}" +
+                        "{\"op\": \"replace\", \"path\": \"/picture_id\", \"value\": %d}" +
                         "]",
                 newFirstName,
                 1

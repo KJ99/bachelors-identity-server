@@ -16,12 +16,13 @@ import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationRepository;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -172,6 +173,19 @@ public class AccountApiControllerTests {
         ).andExpect(status().isBadRequest()).andReturn();
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
+    }
+
+    @Test
+    public void testGetAvailability() throws Exception {
+        String url = String.format(
+                "/v1/account/availability?field=email&value=%s",
+                URLEncoder.encode("some-fake-email@email.com", StandardCharsets.UTF_8)
+        );
+        var result = mockMvc.perform(
+                get(url)
+        ).andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).contains("available");
     }
 
 

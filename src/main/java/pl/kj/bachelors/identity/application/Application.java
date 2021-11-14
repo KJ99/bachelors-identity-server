@@ -24,10 +24,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 import org.springframework.web.util.UriComponentsBuilder;
-import pl.kj.bachelors.identity.application.dto.response.ProfileResponse;
-import pl.kj.bachelors.identity.application.dto.response.PublicProfileResponse;
-import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
-import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
+import pl.kj.bachelors.identity.application.dto.response.*;
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.SingleCheckResponse;
@@ -39,6 +36,7 @@ import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.model.update.UserUpdateModel;
+import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -184,6 +182,12 @@ public class Application {
 			@Override
 			protected void configure() {
 				map().setUserName(source.getUsername());
+				using(ctx -> {
+					UserUpdateModel src = (UserUpdateModel) ctx.getSource();
+					UploadedFile file = new UploadedFile();
+					file.setId(src.getPictureId());
+					return src.getPictureId() != null ? file : null;
+				}).map(source, destination.getPicture());
 			}
 		});
 
