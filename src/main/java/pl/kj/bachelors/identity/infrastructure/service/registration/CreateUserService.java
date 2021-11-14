@@ -33,7 +33,6 @@ public class CreateUserService implements UserCreator {
         user.setUserName(username);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setSalt(salt);
         user.setPassword(BCrypt.hashpw(password, salt));
 
         return user;

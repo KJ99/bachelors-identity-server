@@ -35,7 +35,6 @@ public class CreateUserServiceTests {
                 .isNotEqualTo(password);
 
         assertThat(result.getEmail()).isEqualTo(email);
-        assertThat(result.getSalt()).isNotNull().isNotEmpty();
         assertThat(result.getFirstName()).isEqualTo(firstName);
         assertThat(result.getLastName()).isEqualTo(lastName);
         assertThat(result.getUserName()).isEqualTo(username);

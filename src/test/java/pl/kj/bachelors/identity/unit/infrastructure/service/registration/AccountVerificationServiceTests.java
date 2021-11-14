@@ -173,7 +173,6 @@ class AccountVerificationServiceTests {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setPassword("pass");
-        user.setSalt(email);
 
         return user;
     }

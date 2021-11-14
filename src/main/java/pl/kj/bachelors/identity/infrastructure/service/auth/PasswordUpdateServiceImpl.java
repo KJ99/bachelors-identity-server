@@ -34,7 +34,6 @@ public class PasswordUpdateServiceImpl implements PasswordUpdateService {
         final String salt =  BCrypt.gensalt(this.passwordConfig.getSaltRounds());
         final String hash = BCrypt.hashpw(newPassword, salt);
         user.setPassword(hash);
-        user.setSalt(salt);
 
         this.userRepository.save(user);
     }

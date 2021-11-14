@@ -94,7 +94,6 @@ public class PasswordResetServiceImplTest {
         user.setUserName("username");
         user.setFirstName("Ab");
         user.setLastName("Ba");
-        user.setSalt("salt");
         user.setPassword("pass");
 
         this.userRepository.saveAndFlush(user);

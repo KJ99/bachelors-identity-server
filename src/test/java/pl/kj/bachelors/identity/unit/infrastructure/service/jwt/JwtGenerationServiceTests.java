@@ -58,7 +58,6 @@ public class JwtGenerationServiceTests {
         user.setFirstName("Ab");
         user.setLastName("Ba");
         user.setPassword("pass");
-        user.setSalt("salt");
 
         return user;
     }

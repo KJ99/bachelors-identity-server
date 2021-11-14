@@ -309,7 +309,6 @@ public class AuthenticationApiControllerTests {
         user.setFirstName("Abc");
         user.setLastName("Abc");
         user.setPassword(hash);
-        user.setSalt(salt);
         user.setActive(true);
         user.setVerified(verified);
 
@@ -326,7 +325,6 @@ public class AuthenticationApiControllerTests {
         user.setFirstName("Ab");
         user.setLastName("Ba");
         user.setPassword("pass");
-        user.setSalt(UUID.randomUUID().toString());
         user.setActive(true);
         this.userRepository.saveAndFlush(user);
 
@@ -362,7 +360,6 @@ public class AuthenticationApiControllerTests {
         user.setUserName("username");
         user.setFirstName("Ab");
         user.setLastName("Ba");
-        user.setSalt("salt");
         user.setPassword("pass");
 
         this.userRepository.saveAndFlush(user);

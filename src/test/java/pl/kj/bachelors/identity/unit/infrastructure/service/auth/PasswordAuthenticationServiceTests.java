@@ -100,7 +100,6 @@ public class PasswordAuthenticationServiceTests {
         user.setFirstName("Abc");
         user.setLastName("Abc");
         user.setPassword(hash);
-        user.setSalt(salt);
         user.setVerified(verified);
         user.setActive(true);
 

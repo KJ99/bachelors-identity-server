@@ -24,8 +24,6 @@ public class User {
     @Embedded
     private Audit audit;
     private String password;
-    @Column(unique = true)
-    private String salt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "picture_id", referencedColumnName = "id")
     private UploadedFile picture;
@@ -108,14 +106,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     public UploadedFile getPicture() {

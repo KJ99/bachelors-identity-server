@@ -197,7 +197,6 @@ public class AccountApiControllerTests {
         user.setFirstName("Abc");
         user.setLastName("Abc");
         user.setPassword("pass");
-        user.setSalt(UUID.randomUUID().toString());
 
         this.userRepository.saveAndFlush(user);
 

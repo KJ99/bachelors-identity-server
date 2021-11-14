@@ -37,7 +37,6 @@ public class AccountRegistrationServiceImplTests {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setPassword("SomEP@ssword");
-        user.setSalt("some salt");
         this.userRepository.save(user);
     }
 
