@@ -1,8 +1,5 @@
 package pl.kj.bachelors.identity.application.dto.response;
 
-import io.swagger.annotations.ApiModel;
-
-@ApiModel
 public class PublicProfileResponse {
     private String id;
     private String firstName;

@@ -1,8 +1,5 @@
 package pl.kj.bachelors.identity.application.dto.request;
 
-import io.swagger.annotations.ApiModel;
-
-@ApiModel
 public class PasswordResetInitRequest {
     private String email;
 

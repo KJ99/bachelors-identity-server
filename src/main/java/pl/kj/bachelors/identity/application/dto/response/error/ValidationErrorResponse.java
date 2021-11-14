@@ -1,8 +1,5 @@
 package pl.kj.bachelors.identity.application.dto.response.error;
 
-import io.swagger.annotations.ApiModel;
-
-@ApiModel
 public class ValidationErrorResponse {
     private String path;
     private String message;

@@ -1,8 +1,5 @@
 package pl.kj.bachelors.identity.application.dto.response;
 
-import io.swagger.annotations.ApiModel;
-
-@ApiModel("BasicCreatedResponse")
 public class BasicCreatedResponse<T> {
     private T createdId;
 

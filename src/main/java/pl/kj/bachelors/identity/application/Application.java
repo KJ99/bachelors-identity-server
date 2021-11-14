@@ -36,12 +36,6 @@ import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.model.update.UserUpdateModel;
-import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.sql.DataSource;
 import javax.validation.Validation;
@@ -53,7 +47,6 @@ import java.util.stream.Collectors;
 @EnableJpaRepositories("pl.kj.bachelors.identity.infrastructure.repository")
 @EntityScan("pl.kj.bachelors.identity.domain.model")
 @Configuration
-@EnableSwagger2
 public class Application {
 	@Value("${http.port}")
 	private int httpPort;
@@ -77,14 +70,6 @@ public class Application {
 		connector.setPort(this.httpPort);
 
 		return connector;
-	}
-
-	@Bean
-	public Docket swagger() {
-		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("pl.kj.bachelors"))
-				.paths(PathSelectors.regex("/v1/.*"))
-				.build();
 	}
 
 	@Bean

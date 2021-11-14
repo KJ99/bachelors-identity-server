@@ -1,7 +1,5 @@
 package pl.kj.bachelors.identity.application.controller;
 
-import io.swagger.annotations.ApiOperation;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -53,7 +51,6 @@ public class ResourceApiController extends BaseApiController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation(value = "Upload a file", code = 201, response = BasicCreatedResponse.class)
     @Transactional
     @Authentication
     public ResponseEntity<?> post(
