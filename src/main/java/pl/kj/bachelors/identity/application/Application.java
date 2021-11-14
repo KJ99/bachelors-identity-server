@@ -40,6 +40,7 @@ import pl.kj.bachelors.identity.application.dto.response.health.SingleCheckRespo
 import pl.kj.bachelors.identity.application.model.HealthCheckResult;
 import pl.kj.bachelors.identity.application.model.SingleCheckResult;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
+import pl.kj.bachelors.identity.domain.config.JwtConfig;
 import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
@@ -65,6 +66,9 @@ public class Application {
 	@Autowired
 	private AppConfig appConfig;
 
+	@Autowired
+	private JwtConfig jwtConfig;
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
@@ -74,7 +78,7 @@ public class Application {
 		Components swaggerComponents = new Components();
 		SecurityScheme securityScheme = new SecurityScheme()
 				.type(SecurityScheme.Type.HTTP)
-				.scheme("Bearer")
+				.scheme(this.jwtConfig.getType())
 				.bearerFormat("JWT");
 
 		swaggerComponents
