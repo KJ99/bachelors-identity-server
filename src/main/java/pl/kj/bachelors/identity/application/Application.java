@@ -1,9 +1,17 @@
 package pl.kj.bachelors.identity.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.core.jackson.ModelResolver;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.apache.catalina.connector.Connector;
 import org.hibernate.validator.HibernateValidator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.springdoc.core.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -24,6 +32,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 import org.springframework.web.util.UriComponentsBuilder;
+import pl.kj.bachelors.identity.application.config.AppConfig;
 import pl.kj.bachelors.identity.application.dto.response.*;
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
@@ -53,8 +62,37 @@ public class Application {
 	@Autowired
 	private ApiConfig apiConfig;
 
+	@Autowired
+	private AppConfig appConfig;
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
+	}
+
+	@Bean
+	public OpenAPI openApi() {
+		Components swaggerComponents = new Components();
+		SecurityScheme securityScheme = new SecurityScheme()
+				.type(SecurityScheme.Type.HTTP)
+				.scheme("Bearer")
+				.bearerFormat("JWT");
+
+		swaggerComponents
+				.addSecuritySchemes("JWT", securityScheme);
+
+		Info apiInfo = new Info()
+				.title(this.appConfig.getName())
+				.description(this.appConfig.getDescription())
+				.version(this.appConfig.getVersion());
+
+		return new OpenAPI()
+				.components(swaggerComponents)
+				.info(apiInfo);
+	}
+
+	@Bean
+	public ModelResolver modelResolver(ObjectMapper objectMapper) {
+		return new ModelResolver(objectMapper);
 	}
 
 	@Bean

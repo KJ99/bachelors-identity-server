@@ -1,5 +1,11 @@
 package pl.kj.bachelors.identity.application.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.kj.bachelors.identity.application.dto.response.BasicCreatedResponse;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
+import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.application.exception.NotAuthorizedHttpException;
 import pl.kj.bachelors.identity.application.exception.NotFoundHttpException;
@@ -31,6 +38,7 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/v1/resources")
+@Tag(name = "Resources")
 public class ResourceApiController extends BaseApiController {
 
     private final FileUploader fileUploadService;
@@ -53,6 +61,24 @@ public class ResourceApiController extends BaseApiController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     @Authentication
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = BasicCreatedResponse.class)
+                    ),
+                    description = "File uploaded successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ValidationErrorResponse.class)
+                    )
+            )
+    })
     public ResponseEntity<?> post(
             @RequestParam("file") final MultipartFile file
     ) throws IOException, BadRequestHttpException, NotAuthorizedHttpException {
@@ -79,6 +105,14 @@ public class ResourceApiController extends BaseApiController {
     }
 
     @GetMapping("/{id}")
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = UploadedFileResponse.class)
+            ),
+            description = "File data"
+    )
     public ResponseEntity<UploadedFileResponse> getParticular(@PathVariable("id") int id) throws NotFoundHttpException {
         final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id).orElseThrow(NotFoundHttpException::new);
         return ResponseEntity.ok(this.map(uploadedFile, UploadedFileResponse.class));

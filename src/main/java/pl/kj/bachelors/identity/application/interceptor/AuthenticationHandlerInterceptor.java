@@ -51,8 +51,15 @@ public class AuthenticationHandlerInterceptor implements HandlerInterceptor {
             @NonNull HttpServletResponse response,
             @NonNull Object handler
     ) throws Exception {
-        Optional<Authentication> authValue = this.findAuthenticationStrategy(handler);
-        return authValue.isEmpty() || this.handleAuthentication(authValue.get(), request, response);
+        boolean result;
+        if(!(handler instanceof HandlerMethod)) {
+            result = true;
+        } else {
+            Optional<Authentication> authValue = this.findAuthenticationStrategy(handler);
+            result = authValue.isEmpty() || this.handleAuthentication(authValue.get(), request, response);
+        }
+
+        return result;
     }
 
     private Optional<Authentication> findAuthenticationStrategy(Object handler) {

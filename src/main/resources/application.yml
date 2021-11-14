@@ -1,3 +1,12 @@
+app:
+  name: Identity Server
+  description: Identity API for Konrad Jezierski's bachelors project
+springdoc:
+  api-docs:
+    path: /swagger-json
+  swagger-ui:
+    path: /swagger-ui
+    operations-sorter: method
 spring:
   jackson:
     property-naming-strategy: SNAKE_CASE

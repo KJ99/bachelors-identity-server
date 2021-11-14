@@ -1,9 +1,18 @@
 package pl.kj.bachelors.identity.application.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.kj.bachelors.identity.application.dto.request.LoginRequest;
@@ -12,6 +21,7 @@ import pl.kj.bachelors.identity.application.dto.request.PasswordResetRequest;
 import pl.kj.bachelors.identity.application.dto.response.LoginResponse;
 import pl.kj.bachelors.identity.application.dto.response.PasswordResetInitResponse;
 import pl.kj.bachelors.identity.application.dto.response.TokenResponse;
+import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.application.exception.ForbiddenHttpException;
 import pl.kj.bachelors.identity.application.exception.NotAuthorizedHttpException;
@@ -40,6 +50,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/v1/auth")
+@Tag(name = "Auth")
 public class AuthenticationApiController extends BaseApiController {
     private final TokenRefresher tokenRefresher;
     private final RefreshTokenManager refreshTokenManager;
@@ -65,6 +76,20 @@ public class AuthenticationApiController extends BaseApiController {
     }
 
     @PostMapping("/login")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = LoginResponse.class)
+                    ),
+                    description = "Successful logged in"),
+            @ApiResponse(
+                    responseCode = "400",
+                    content = @Content(schema = @Schema(hidden = true))
+            ),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true)))
+    })
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse response)
             throws AccountNotVerifiedException, WrongCredentialsException {
         AuthResult<PasswordAuthPayload> result = this.passwordAuthenticator.authenticate(
@@ -85,6 +110,21 @@ public class AuthenticationApiController extends BaseApiController {
     }
 
     @PutMapping("/refresh")
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "202",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = TokenResponse.class)
+                    ),
+                    description = "Token refreshed"),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = @Content(schema = @Schema(hidden = true))
+            ),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true)))
+    })
     public ResponseEntity<TokenResponse> refresh(HttpServletRequest request, HttpServletResponse response)
             throws ForbiddenHttpException, NotAuthorizedHttpException {
         String access = this.accessTokenFetcher.getAccessTokenFromRequest(request)
@@ -103,6 +143,17 @@ public class AuthenticationApiController extends BaseApiController {
     }
 
     @PostMapping("/password-reset/init")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "202",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = PasswordResetInitResponse.class)
+                    ),
+                    description = "Password reset token"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true)))
+    })
     public ResponseEntity<PasswordResetInitResponse> initPasswordReset(@RequestBody PasswordResetInitRequest request)
             throws BadRequestHttpException, NotFoundException, ExecutionException, InterruptedException {
         this.ensureThatModelIsValid(request);
@@ -120,7 +171,22 @@ public class AuthenticationApiController extends BaseApiController {
     }
 
     @PostMapping("/password-reset")
-    public ResponseEntity<?> initPasswordReset(@RequestBody PasswordResetRequest request)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "202",
+                    content = @Content(schema = @Schema(hidden = true)),
+                    description = "Password reset successfully"),
+            @ApiResponse(
+                    responseCode = "400",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = ValidationErrorResponse.class))
+                    )
+            ),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true)))
+    })
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request)
             throws BadRequestHttpException, AccessDeniedException, ValidationViolation, NotFoundException {
         this.ensureThatModelIsValid(request);
         this.passwordResetService.resetPassword(request.getToken(), request.getPin(), request.getPassword());
