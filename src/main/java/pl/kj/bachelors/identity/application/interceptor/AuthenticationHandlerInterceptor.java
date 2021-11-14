@@ -3,8 +3,11 @@ package pl.kj.bachelors.identity.application.interceptor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -26,6 +29,7 @@ public class AuthenticationHandlerInterceptor implements HandlerInterceptor {
     private final JwtParser parser;
     private final ApiConfig apiConfig;
     private final ObjectMapper objectMapper;
+    private final Logger logger;
 
     @Autowired
     public AuthenticationHandlerInterceptor(
@@ -38,10 +42,15 @@ public class AuthenticationHandlerInterceptor implements HandlerInterceptor {
         this.parser = parser;
         this.apiConfig = apiConfig;
         this.objectMapper = objectMapper;
+        this.logger = LoggerFactory.getLogger(AuthenticationHandlerInterceptor.class);
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull Object handler
+    ) throws Exception {
         Optional<Authentication> authValue = this.findAuthenticationStrategy(handler);
         return authValue.isEmpty() || this.handleAuthentication(authValue.get(), request, response);
     }
@@ -76,6 +85,13 @@ public class AuthenticationHandlerInterceptor implements HandlerInterceptor {
             this.parser.validateToken(token);
             String uid = this.parser.getUid(token);
             request.setAttribute("uid", uid);
+            this.logger.info(
+                    String.format(
+                            "User %s was successfully authenticated with access token from address %s",
+                            uid,
+                            request.getRemoteAddr()
+                    )
+            );
             result = true;
         } catch (JwtInvalidException e) {
             result = this.handleInvalidToken(auth, response, HttpStatus.FORBIDDEN, "");
@@ -97,6 +113,7 @@ public class AuthenticationHandlerInterceptor implements HandlerInterceptor {
         if(!result) {
             response.setStatus(errorStatus.value());
             response.getWriter().write(responseContent);
+            this.logger.info("Request was rejected due to failed authentication (HTTP code: %s)");
         }
 
         return result;

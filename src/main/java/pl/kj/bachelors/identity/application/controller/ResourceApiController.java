@@ -15,9 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.kj.bachelors.identity.application.dto.response.BasicCreatedResponse;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
+import pl.kj.bachelors.identity.application.exception.NotAuthorizedHttpException;
 import pl.kj.bachelors.identity.application.exception.NotFoundHttpException;
+import pl.kj.bachelors.identity.domain.annotation.Authentication;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
+import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
@@ -52,9 +55,11 @@ public class ResourceApiController extends BaseApiController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Upload a file", code = 201, response = BasicCreatedResponse.class)
     @Transactional
+    @Authentication
     public ResponseEntity<?> post(
             @RequestParam("file") final MultipartFile file
-    ) throws IOException, BadRequestHttpException {
+    ) throws IOException, BadRequestHttpException, NotAuthorizedHttpException {
+        User user = this.getUser().orElseThrow(NotAuthorizedHttpException::new);
         final UploadedFile resultEntity = this.fileUploadService.processUpload(
                 file,
                 this.allowedMediaTypes,
@@ -62,6 +67,15 @@ public class ResourceApiController extends BaseApiController {
         );
 
         this.uploadedFileRepository.save(resultEntity);
+
+        this.logger.info(
+                String.format("File with name %s (original: %s) was uploaded by user %s from address %s",
+                        resultEntity.getFileName(),
+                        resultEntity.getOriginalFileName(),
+                        user.getUid(),
+                        this.currentRequest.getRemoteAddr()
+                )
+        );
 
         var response = new BasicCreatedResponse<>(resultEntity.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -78,6 +92,13 @@ public class ResourceApiController extends BaseApiController {
         final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id).orElseThrow(NotFoundHttpException::new);
         final Path path = Paths.get(uploadedFile.getDirectory(), uploadedFile.getFileName());
         ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        this.logger.info(
+                String.format("File with name %s was sent to address %s",
+                        uploadedFile.getFileName(),
+                        this.currentRequest.getRemoteAddr()
+                )
+        );
 
         return ResponseEntity
                 .ok()

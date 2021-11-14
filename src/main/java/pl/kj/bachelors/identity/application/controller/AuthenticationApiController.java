@@ -74,6 +74,13 @@ public class AuthenticationApiController extends BaseApiController {
         String refreshToken = result.getPayload().getToken().getRefreshToken();
         this.refreshTokenManager.putInResponse(refreshToken, response);
 
+        this.logger.info(
+                String.format("User with UID %s authenticated by password from address %s",
+                        result.getPayload().getUser().getUid(),
+                        this.currentRequest.getRemoteAddr()
+                )
+        );
+
         return ResponseEntity.ok(this.map(result.getPayload(), LoginResponse.class));
     }
 
@@ -101,6 +108,13 @@ public class AuthenticationApiController extends BaseApiController {
         this.ensureThatModelIsValid(request);
         PasswordReset passwordReset = this.passwordResetService.createPasswordReset(request.getEmail());
         this.mailer.sendPasswordResetEmail(passwordReset);
+
+        this.logger.info(
+                String.format("User with UID %s has initialized password reset process from address %s",
+                        passwordReset.getUser().getUid(),
+                        this.currentRequest.getRemoteAddr()
+                )
+        );
 
         return ResponseEntity.accepted().body(this.map(passwordReset, PasswordResetInitResponse.class));
     }

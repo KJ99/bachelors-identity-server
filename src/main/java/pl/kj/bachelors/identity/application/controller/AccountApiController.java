@@ -56,6 +56,13 @@ public class AccountApiController extends BaseApiController {
 
         mailer.sendVerificationEmail(verification);
 
+        this.logger.info(
+                String.format("Successfully created an account with UID %s from address %s",
+                        verification.getUser().getUid(),
+                        this.currentRequest.getRemoteAddr()
+                )
+        );
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(this.map(verification, UserVerificationResponse.class));
@@ -76,6 +83,7 @@ public class AccountApiController extends BaseApiController {
     public ResponseEntity<?> verify(@RequestBody AccountVerificationRequest request)
             throws ValidationViolation, NotFoundException {
         this.verificationService.verifyUser(request.getToken(), request.getPin());
+
         return ResponseEntity.noContent().build();
     }
 

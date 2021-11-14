@@ -4,6 +4,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -49,6 +51,7 @@ abstract class BaseApiController {
     @Autowired(required = false)
     @SuppressWarnings("rawtypes")
     protected Set<Voter> voters;
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     protected  <T> T map(Object source, Class<T> destinationType) {
         return this.mapper.map(source, destinationType);
