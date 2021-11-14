@@ -34,6 +34,7 @@ jwt:
     name: ''
     valid-time-in-minutes: 0
 api:
+  host: ''
   errors:
     ID.001: Provided value is not a valid email address
     ID.002: Provided value is too short or too long

@@ -15,8 +15,7 @@ import pl.kj.bachelors.identity.integration.BaseIntegrationTest;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -171,6 +170,40 @@ public class ProfileApiControllerTests extends BaseIntegrationTest {
                         .content(patchString.getBytes(StandardCharsets.UTF_8))
                         .header(HttpHeaders.AUTHORIZATION, auth)
         ).andExpect(status().isForbidden());
+    }
 
+    @Test
+    public void testGet() throws Exception {
+        String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateValidAccessToken("uid-active-1"));
+
+        MvcResult result = this.mockMvc.perform(
+                    get("/v1/profile")
+                            .header(HttpHeaders.AUTHORIZATION, auth)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+        String responseBody = result.getResponse().getContentAsString();
+
+        assertThat(responseBody).contains("first_name");
+        assertThat(responseBody).contains("last_name");
+        assertThat(responseBody).contains("picture_url");
+        assertThat(responseBody).contains("id");
+    }
+
+    @Test
+    public void testGetPublicProfile() throws Exception {
+        String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateValidAccessToken("uid-active-1"));
+
+        MvcResult result = this.mockMvc.perform(
+                        get("/v1/profile/uid-active-2")
+                                .header(HttpHeaders.AUTHORIZATION, auth)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+        String responseBody = result.getResponse().getContentAsString();
+
+        assertThat(responseBody).contains("first_name");
+        assertThat(responseBody).contains("last_name");
+        assertThat(responseBody).contains("id");
     }
 }

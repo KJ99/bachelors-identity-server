@@ -4,6 +4,7 @@ import org.apache.catalina.connector.Connector;
 import org.hibernate.validator.HibernateValidator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
@@ -22,7 +23,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 import pl.kj.bachelors.identity.application.dto.response.ProfileResponse;
+import pl.kj.bachelors.identity.application.dto.response.PublicProfileResponse;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
@@ -30,6 +33,7 @@ import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckRespo
 import pl.kj.bachelors.identity.application.dto.response.health.SingleCheckResponse;
 import pl.kj.bachelors.identity.application.model.HealthCheckResult;
 import pl.kj.bachelors.identity.application.model.SingleCheckResult;
+import pl.kj.bachelors.identity.domain.config.ApiConfig;
 import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
@@ -55,6 +59,8 @@ import java.util.stream.Collectors;
 public class Application {
 	@Value("${http.port}")
 	private int httpPort;
+	@Autowired
+	private ApiConfig apiConfig;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -124,11 +130,42 @@ public class Application {
 		mapper.addMappings(new PropertyMap<User, ProfileResponse>() {
 			@Override
 			protected void configure() {
+				map().setId(source.getUid());
 				using(ctx -> {
 					User src = (User) ctx.getSource();
-					return String.format("%s %s", src.getFirstName(), src.getLastName());
-				}).map(source, destination.getName());
+					UriComponentsBuilder uriBuilder = UriComponentsBuilder
+							.newInstance()
+							.host(apiConfig.getHost())
+							.scheme("https");
+
+					return src.getPicture() != null
+							? uriBuilder
+								.path("/v1/resources/{id}/download")
+								.buildAndExpand(src.getPicture().getId())
+								.toUriString()
+							: null;
+				}).map(source, destination.getPictureUrl());
+			}
+		});
+
+		mapper.addMappings(new PropertyMap<User, PublicProfileResponse>() {
+			@Override
+			protected void configure() {
 				map().setId(source.getUid());
+				using(ctx -> {
+					User src = (User) ctx.getSource();
+					UriComponentsBuilder uriBuilder = UriComponentsBuilder
+							.newInstance()
+							.host(apiConfig.getHost())
+							.scheme("https");
+
+					return src.getPicture() != null
+							? uriBuilder
+							.path("/v1/resources/{id}/download")
+							.buildAndExpand(src.getPicture().getId())
+							.toUriString()
+							: null;
+				}).map(source, destination.getPictureUrl());
 			}
 		});
 

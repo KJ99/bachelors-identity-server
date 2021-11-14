@@ -5,5 +5,5 @@ create table uploaded_files (
     original_file_name varchar(255) not null,
     media_type varchar(255) not null,
     created_at datetime default current_timestamp,
-    updated_ar datetime default null
+    updated_at datetime default null
 );

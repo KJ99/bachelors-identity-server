@@ -2,6 +2,7 @@ package pl.kj.bachelors.identity.domain.model.entity;
 
 import org.hibernate.annotations.Loader;
 import pl.kj.bachelors.identity.domain.model.embeddable.Audit;
+import pl.kj.bachelors.identity.domain.model.embeddable.UserSettings;
 
 import javax.persistence.*;
 
@@ -28,6 +29,8 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "picture_id", referencedColumnName = "id")
     private UploadedFile picture;
+    @Embedded
+    private UserSettings settings;
 
     public User() {
         this.audit = new Audit();
@@ -121,5 +124,13 @@ public class User {
 
     public void setPicture(UploadedFile picture) {
         this.picture = picture;
+    }
+
+    public UserSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(UserSettings settings) {
+        this.settings = settings;
     }
 }

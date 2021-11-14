@@ -42,3 +42,5 @@ jwt:
     name: test-token
     valid-time-in-minutes: 10
     domain: ''
+api:
+  host: 'localhost:8443'

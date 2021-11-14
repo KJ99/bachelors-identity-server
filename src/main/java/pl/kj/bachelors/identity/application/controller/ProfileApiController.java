@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.kj.bachelors.identity.application.dto.request.ChangePasswordRequest;
+import pl.kj.bachelors.identity.application.dto.response.ProfileResponse;
+import pl.kj.bachelors.identity.application.dto.response.PublicProfileResponse;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.application.exception.NotAuthorizedHttpException;
+import pl.kj.bachelors.identity.application.exception.NotFoundHttpException;
 import pl.kj.bachelors.identity.domain.annotation.Authentication;
 import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
@@ -54,5 +57,19 @@ public class ProfileApiController extends BaseApiController {
         this.userUpdateService.processUpdate(user, jsonPatch, UserUpdateModel.class);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<ProfileResponse> get() throws NotAuthorizedHttpException {
+        User user = this.getUser().orElseThrow(NotAuthorizedHttpException::new);
+
+        return ResponseEntity.ok(this.map(user, ProfileResponse.class));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PublicProfileResponse> getPublicProfile(@PathVariable("id") String id) throws NotFoundHttpException {
+        User user = this.userRepository.findById(id).orElseThrow(NotFoundHttpException::new);
+
+        return ResponseEntity.ok(this.map(user, PublicProfileResponse.class));
     }
 }

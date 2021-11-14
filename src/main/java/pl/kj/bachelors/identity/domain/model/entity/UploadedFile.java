@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Table(name = "uploaded_files")
 public class UploadedFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String directory;
     @Column(name = "file_name")

@@ -3,12 +3,11 @@ package pl.kj.bachelors.identity.application.dto.response;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel
-public class ProfileResponse {
+public class PublicProfileResponse {
     private String id;
     private String firstName;
     private String lastName;
     private String pictureUrl;
-    private UserSettingsResponse settings;
 
     public String getId() {
         return id;
@@ -16,14 +15,6 @@ public class ProfileResponse {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getPictureUrl() {
-        return pictureUrl;
-    }
-
-    public void setPictureUrl(String pictureUrl) {
-        this.pictureUrl = pictureUrl;
     }
 
     public String getFirstName() {
@@ -42,11 +33,11 @@ public class ProfileResponse {
         this.lastName = lastName;
     }
 
-    public UserSettingsResponse getSettings() {
-        return settings;
+    public String getPictureUrl() {
+        return pictureUrl;
     }
 
-    public void setSettings(UserSettingsResponse settings) {
-        this.settings = settings;
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 }

@@ -10,6 +10,7 @@ public class UserUpdateModel {
     @Length(min = 2, max = 120, message = "ID.002")
     private String lastName;
     private Integer pictureId;
+    private UserSettingsUpdateModel settings;
 
     public String getUsername() {
         return username;
@@ -41,5 +42,13 @@ public class UserUpdateModel {
 
     public void setPictureId(Integer pictureId) {
         this.pictureId = pictureId;
+    }
+
+    public UserSettingsUpdateModel getSettings() {
+        return settings;
+    }
+
+    public void setSettings(UserSettingsUpdateModel settings) {
+        this.settings = settings;
     }
 }

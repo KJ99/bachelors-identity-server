@@ -1,0 +1,1 @@
+alter table users add column settings_night_mode tinyint(1) default 0;
