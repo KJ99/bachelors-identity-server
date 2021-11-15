@@ -40,11 +40,13 @@ public class AccountApiController extends BaseApiController {
     private final MailSender mailer;
     private final AccountVerifier verificationService;
     private final AvailabilityChecker availabilityChecker;
+
+    @Autowired
     AccountApiController(
-            @Autowired AccountRegistrationService service,
-            @Autowired MailSender mailer,
-            @Autowired AccountVerifier verificationService,
-            @Autowired AvailabilityChecker availabilityChecker) {
+            AccountRegistrationService service,
+            MailSender mailer,
+            AccountVerifier verificationService,
+            AvailabilityChecker availabilityChecker) {
         this.service = service;
         this.mailer = mailer;
         this.verificationService = verificationService;

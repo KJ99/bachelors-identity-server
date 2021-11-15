@@ -13,7 +13,8 @@ import java.util.UUID;
 public class CreateUserService implements UserCreator {
     private final PasswordConfig config;
 
-    public CreateUserService(@Autowired PasswordConfig config) {
+    @Autowired
+    public CreateUserService(PasswordConfig config) {
         this.config = config;
     }
 

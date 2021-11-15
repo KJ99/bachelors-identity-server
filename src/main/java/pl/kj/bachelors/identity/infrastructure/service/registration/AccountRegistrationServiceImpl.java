@@ -16,19 +16,17 @@ import java.util.concurrent.ExecutionException;
 public class AccountRegistrationServiceImpl implements AccountRegistrationService {
     private final CreateUserService createUserService;
     private final UserRepository userRepo;
-    private final ApiConfig apiConfig;
     private final AccountVerificationService verificationService;
     private final UserVerificationRepository verificationRepository;
 
+    @Autowired
     public AccountRegistrationServiceImpl(
-            @Autowired CreateUserService createUserService,
-            @Autowired UserRepository userRepo,
-            @Autowired ApiConfig apiConfig,
-            @Autowired AccountVerificationService verificationService,
-            @Autowired UserVerificationRepository verificationRepository) {
+            CreateUserService createUserService,
+            UserRepository userRepo,
+            AccountVerificationService verificationService,
+            UserVerificationRepository verificationRepository) {
         this.createUserService = createUserService;
         this.userRepo = userRepo;
-        this.apiConfig = apiConfig;
         this.verificationService = verificationService;
         this.verificationRepository = verificationRepository;
     }

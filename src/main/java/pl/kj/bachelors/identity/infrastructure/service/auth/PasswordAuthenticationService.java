@@ -23,11 +23,12 @@ public class PasswordAuthenticationService implements PasswordAuthenticator {
     private final JwtGenerator jwtGenerator;
     private final JwtConfig jwtConfig;
 
+    @Autowired
     public PasswordAuthenticationService(
-            @Autowired UserRepository userRepository,
-            @Autowired UserVerificationRepository verificationRepository,
-            @Autowired JwtGenerator jwtGenerator,
-            @Autowired JwtConfig jwtConfig) {
+            UserRepository userRepository,
+            UserVerificationRepository verificationRepository,
+            JwtGenerator jwtGenerator,
+            JwtConfig jwtConfig) {
         this.userRepository = userRepository;
         this.verificationRepository = verificationRepository;
         this.jwtGenerator = jwtGenerator;

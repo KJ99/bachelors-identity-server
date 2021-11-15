@@ -16,7 +16,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class ParseJwtService implements JwtParser {
     private final JwtConfig config;
 
-    public ParseJwtService(@Autowired JwtConfig config) {
+    @Autowired
+    public ParseJwtService(JwtConfig config) {
         this.config = config;
     }
 

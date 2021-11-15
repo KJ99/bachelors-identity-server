@@ -46,9 +46,10 @@ public class ResourceApiController extends BaseApiController {
     private final int maxFileSize;
     private final String[] allowedMediaTypes;
 
+    @Autowired
     ResourceApiController(
-            @Autowired FileUploader fileUploadService,
-            @Autowired UploadedFileRepository uploadedFileRepository,
+            FileUploader fileUploadService,
+            UploadedFileRepository uploadedFileRepository,
             @Value("${file-upload.max-size}") int maxFileSize,
             @Value("${file-upload.allowed-types}") String[] allowedMediaTypes
     ) {

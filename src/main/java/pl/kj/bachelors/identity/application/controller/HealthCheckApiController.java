@@ -28,7 +28,8 @@ import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 public class HealthCheckApiController extends BaseApiController {
     private final HealthCheckService healthCheckService;
 
-    HealthCheckApiController(@Autowired HealthCheckService healthCheckService) {
+    @Autowired
+    HealthCheckApiController(HealthCheckService healthCheckService) {
         this.healthCheckService = healthCheckService;
     }
 

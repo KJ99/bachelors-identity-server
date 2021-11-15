@@ -24,11 +24,12 @@ public class AccountVerificationService implements AccountVerifier {
     private final TokenGenerationService tokenGenerator;
     private final VerificationConfig verificationConfig;
 
+    @Autowired
     public AccountVerificationService(
-            @Autowired UserRepository userRepository,
-            @Autowired UserVerificationRepository verificationRepository,
-            @Autowired TokenGenerationService tokenGenerator,
-            @Autowired VerificationConfig verificationConfig) {
+            UserRepository userRepository,
+            UserVerificationRepository verificationRepository,
+            TokenGenerationService tokenGenerator,
+            VerificationConfig verificationConfig) {
         this.userRepository = userRepository;
         this.verificationRepository = verificationRepository;
         this.tokenGenerator = tokenGenerator;

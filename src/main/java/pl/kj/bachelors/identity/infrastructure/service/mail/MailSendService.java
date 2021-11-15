@@ -17,7 +17,8 @@ public class MailSendService implements MailSender {
     private final JavaMailSender emailSender;
     private final String from;
 
-    public MailSendService(@Autowired JavaMailSender emailSender, @Value("${spring.mail.from}") String from) {
+    @Autowired
+    public MailSendService(JavaMailSender emailSender, @Value("${spring.mail.from}") String from) {
         this.emailSender = emailSender;
         this.from = from;
     }

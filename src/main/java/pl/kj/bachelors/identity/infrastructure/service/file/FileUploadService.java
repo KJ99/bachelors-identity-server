@@ -25,8 +25,9 @@ public class FileUploadService implements FileUploader {
     private final FileValidator validator;
     private final String destinationDirectory;
 
+    @Autowired
     public FileUploadService(
-            @Autowired FileValidator validator,
+            FileValidator validator,
             @Value("${file-upload.destination-dir}") String destinationDirectory
     ) {
         this.validator = validator;

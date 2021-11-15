@@ -21,11 +21,12 @@ public class RefreshTokenService implements TokenRefresher {
     private final UserRepository userRepository;
     private final JwtConfig jwtConfig;
 
+    @Autowired
     public RefreshTokenService(
-            @Autowired ParseJwtService parseService,
-            @Autowired JwtGenerationService generationService,
-            @Autowired UserRepository userRepository,
-            @Autowired JwtConfig jwtConfig) {
+            ParseJwtService parseService,
+            JwtGenerationService generationService,
+            UserRepository userRepository,
+            JwtConfig jwtConfig) {
         this.parseService = parseService;
         this.generationService = generationService;
         this.userRepository = userRepository;

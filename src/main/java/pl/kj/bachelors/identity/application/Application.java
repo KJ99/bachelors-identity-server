@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 public class Application {
 	@Value("${http.port}")
 	private int httpPort;
-	@Autowired
+	 @Autowired
 	private ApiConfig apiConfig;
 
 	@Autowired

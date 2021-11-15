@@ -21,18 +21,19 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class PasswordResetServiceImpl implements PasswordResetService {
-    private PasswordResetConfig config;
-    private TokenGenerationService tokenGenerator;
-    private UserRepository userRepository;
-    private PasswordResetRepository passwordResetRepository;
-    private PasswordConfig passwordConfig;
+    private final PasswordResetConfig config;
+    private final TokenGenerationService tokenGenerator;
+    private final UserRepository userRepository;
+    private final PasswordResetRepository passwordResetRepository;
+    private final PasswordConfig passwordConfig;
 
+    @Autowired
     public PasswordResetServiceImpl(
-            @Autowired PasswordResetConfig config,
-            @Autowired TokenGenerationService tokenGenerator,
-            @Autowired UserRepository userRepository,
-            @Autowired PasswordResetRepository passwordResetRepository,
-            @Autowired PasswordConfig passwordConfig) {
+            PasswordResetConfig config,
+            TokenGenerationService tokenGenerator,
+            UserRepository userRepository,
+            PasswordResetRepository passwordResetRepository,
+            PasswordConfig passwordConfig) {
         this.config = config;
         this.tokenGenerator = tokenGenerator;
         this.userRepository = userRepository;

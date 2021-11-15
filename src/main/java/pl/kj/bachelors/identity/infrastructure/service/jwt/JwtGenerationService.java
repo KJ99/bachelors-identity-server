@@ -16,11 +16,10 @@ import java.util.Calendar;
 @Service
 public class JwtGenerationService implements JwtGenerator {
     private final JwtConfig config;
-    private final ObjectMapper objectMapper;
 
-    public JwtGenerationService(@Autowired JwtConfig config, @Autowired ObjectMapper objectMapper) {
+    @Autowired
+    public JwtGenerationService(JwtConfig config) {
         this.config = config;
-        this.objectMapper = objectMapper;
     }
 
     @Override

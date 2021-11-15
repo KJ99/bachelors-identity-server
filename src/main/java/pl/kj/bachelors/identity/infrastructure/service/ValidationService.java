@@ -19,9 +19,10 @@ public class ValidationService implements ModelValidator {
     private final Validator validator;
     private final ApiConfig apiConfig;
 
+    @Autowired
     public ValidationService(
-            @Autowired Validator validator,
-            @Autowired ApiConfig apiConfig
+            Validator validator,
+            ApiConfig apiConfig
             ) {
         this.validator = validator;
         this.apiConfig = apiConfig;

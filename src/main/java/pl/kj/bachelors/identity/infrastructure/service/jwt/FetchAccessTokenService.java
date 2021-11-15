@@ -14,7 +14,8 @@ import java.util.Optional;
 public class FetchAccessTokenService implements AccessTokenFetcher {
     private final JwtConfig config;
 
-    public FetchAccessTokenService(@Autowired JwtConfig config) {
+    @Autowired
+    public FetchAccessTokenService(JwtConfig config) {
         this.config = config;
     }
 

@@ -15,7 +15,8 @@ import java.util.Optional;
 public class RefreshTokenManagementService implements RefreshTokenManager {
     private final JwtCookieConfig config;
 
-    public RefreshTokenManagementService(@Autowired JwtCookieConfig config) {
+    @Autowired
+    public RefreshTokenManagementService(JwtCookieConfig config) {
         this.config = config;
     }
 

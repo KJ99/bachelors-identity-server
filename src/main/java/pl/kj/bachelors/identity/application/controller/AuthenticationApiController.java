@@ -59,13 +59,14 @@ public class AuthenticationApiController extends BaseApiController {
     private final PasswordResetService passwordResetService;
     private final MailSender mailer;
 
+    @Autowired
     AuthenticationApiController(
-            @Autowired TokenRefresher tokenRefresher,
-            @Autowired RefreshTokenManager refreshTokenManager,
-            @Autowired AccessTokenFetcher accessTokenFetcher,
-            @Autowired PasswordAuthenticator passwordAuthenticator,
-            @Autowired PasswordResetService passwordResetService,
-            @Autowired MailSender mailer
+            TokenRefresher tokenRefresher,
+            RefreshTokenManager refreshTokenManager,
+            AccessTokenFetcher accessTokenFetcher,
+            PasswordAuthenticator passwordAuthenticator,
+            PasswordResetService passwordResetService,
+            MailSender mailer
     ) {
         this.tokenRefresher = tokenRefresher;
         this.refreshTokenManager = refreshTokenManager;
