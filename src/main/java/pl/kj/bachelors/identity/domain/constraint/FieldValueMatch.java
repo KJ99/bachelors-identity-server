@@ -1,7 +1,6 @@
 package pl.kj.bachelors.identity.domain.constraint;
 
 import pl.kj.bachelors.identity.domain.validator.FieldValueMatchValidator;
-import pl.kj.bachelors.identity.domain.validator.PasswordValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

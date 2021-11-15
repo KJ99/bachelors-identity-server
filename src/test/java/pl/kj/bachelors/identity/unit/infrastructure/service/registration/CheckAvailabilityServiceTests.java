@@ -1,14 +1,8 @@
 package pl.kj.bachelors.identity.unit.infrastructure.service.registration;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.infrastructure.service.registration.CheckAvailabilityService;
 
 import static org.assertj.core.api.Assertions.assertThat;

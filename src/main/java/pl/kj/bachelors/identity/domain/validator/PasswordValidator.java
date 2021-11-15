@@ -1,7 +1,6 @@
 package pl.kj.bachelors.identity.domain.validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.domain.config.PasswordConfig;
 import pl.kj.bachelors.identity.domain.constraint.Password;

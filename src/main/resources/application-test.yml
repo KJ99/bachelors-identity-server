@@ -23,7 +23,7 @@ password:
 file-upload:
   destination-dir: src/main/resources/local
   max-size: 3145728
-  allowed-types: image/png
+  allowed-types: image/png, application/pdf
 account-verification:
   token-prefix: 'fwggw-'
   token-suffix: '-eqwrr'

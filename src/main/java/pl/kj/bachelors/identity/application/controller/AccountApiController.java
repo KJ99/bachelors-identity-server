@@ -18,11 +18,9 @@ import pl.kj.bachelors.identity.application.dto.request.AvailabilityRequest;
 import pl.kj.bachelors.identity.application.dto.request.RegistrationRequest;
 import pl.kj.bachelors.identity.application.dto.request.VerificationResendRequest;
 import pl.kj.bachelors.identity.application.dto.response.AvailabilityResponse;
-import pl.kj.bachelors.identity.application.dto.response.PasswordResetInitResponse;
 import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
-import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
-import pl.kj.bachelors.identity.application.exception.ConflictHttpException;
+import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
@@ -69,7 +67,7 @@ public class AccountApiController extends BaseApiController {
             )
     })
     public ResponseEntity<UserVerificationResponse> register(@RequestBody RegistrationRequest request)
-            throws BadRequestHttpException, ConflictHttpException, ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException, AggregatedApiError {
         this.ensureThatModelIsValid(request);
         UserVerification verification = this.service.registerAccount(
                 request.getEmail(),

@@ -1,35 +1,22 @@
 package pl.kj.bachelors.identity.integration.application.controller;
 
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultJwtBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.application.dto.request.LoginRequest;
 import pl.kj.bachelors.identity.application.dto.request.PasswordResetRequest;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
 import pl.kj.bachelors.identity.domain.config.JwtCookieConfig;
 import pl.kj.bachelors.identity.domain.config.PasswordConfig;
-import pl.kj.bachelors.identity.domain.model.entity.PasswordReset;
-import pl.kj.bachelors.identity.domain.model.entity.User;
-import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.infrastructure.repository.PasswordResetRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationRepository;
 import pl.kj.bachelors.identity.integration.BaseIntegrationTest;
 
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
-import java.util.Calendar;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

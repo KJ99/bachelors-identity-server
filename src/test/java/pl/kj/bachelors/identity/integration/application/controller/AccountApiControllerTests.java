@@ -2,28 +2,17 @@ package pl.kj.bachelors.identity.integration.application.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.application.dto.request.AccountVerificationRequest;
 import pl.kj.bachelors.identity.application.dto.request.RegistrationRequest;
 import pl.kj.bachelors.identity.application.dto.request.VerificationResendRequest;
-import pl.kj.bachelors.identity.domain.config.PasswordConfig;
-import pl.kj.bachelors.identity.domain.model.entity.User;
-import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationRepository;
 import pl.kj.bachelors.identity.integration.BaseIntegrationTest;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

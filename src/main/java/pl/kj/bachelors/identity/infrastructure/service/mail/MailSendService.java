@@ -1,10 +1,10 @@
 package pl.kj.bachelors.identity.infrastructure.service.mail;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import pl.kj.bachelors.identity.domain.config.MailerConfig;
 import pl.kj.bachelors.identity.domain.model.entity.PasswordReset;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
@@ -15,12 +15,12 @@ import java.util.concurrent.Executors;
 @Service
 public class MailSendService implements MailSender {
     private final JavaMailSender emailSender;
-    private final String from;
+    private final MailerConfig config;
 
     @Autowired
-    public MailSendService(JavaMailSender emailSender, @Value("${spring.mail.from}") String from) {
+    public MailSendService(JavaMailSender emailSender, MailerConfig config) {
         this.emailSender = emailSender;
-        this.from = from;
+        this.config = config;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MailSendService implements MailSender {
 
     private SimpleMailMessage createPlainTextMessage(final String to, final String subject, final String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(this.from);
+        message.setFrom(this.config.getFrom());
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);

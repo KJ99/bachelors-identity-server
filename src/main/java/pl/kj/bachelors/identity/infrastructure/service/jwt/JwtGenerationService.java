@@ -1,6 +1,5 @@
 package pl.kj.bachelors.identity.infrastructure.service.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultJwtBuilder;
 import org.springframework.beans.factory.annotation.Autowired;

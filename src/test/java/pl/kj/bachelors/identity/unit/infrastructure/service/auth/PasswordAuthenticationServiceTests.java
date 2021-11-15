@@ -2,25 +2,14 @@ package pl.kj.bachelors.identity.unit.infrastructure.service.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
-import pl.kj.bachelors.identity.domain.config.PasswordConfig;
 import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
 import pl.kj.bachelors.identity.domain.exception.WrongCredentialsException;
 import pl.kj.bachelors.identity.domain.model.AuthResult;
 import pl.kj.bachelors.identity.domain.model.AuthResultDetail;
-import pl.kj.bachelors.identity.domain.model.entity.User;
-import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.model.payload.PasswordAuthPayload;
-import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationRepository;
 import pl.kj.bachelors.identity.infrastructure.service.auth.PasswordAuthenticationService;
-
-import java.util.Calendar;
-import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 

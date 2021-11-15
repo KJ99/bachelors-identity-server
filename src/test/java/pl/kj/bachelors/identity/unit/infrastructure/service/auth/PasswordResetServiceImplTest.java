@@ -1,22 +1,14 @@
 package pl.kj.bachelors.identity.unit.infrastructure.service.auth;
 
 import javassist.NotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.exception.AccessDeniedException;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.model.entity.PasswordReset;
-import pl.kj.bachelors.identity.domain.model.entity.User;
-import pl.kj.bachelors.identity.infrastructure.repository.PasswordResetRepository;
-import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.service.auth.PasswordResetServiceImpl;
 
-import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.*;

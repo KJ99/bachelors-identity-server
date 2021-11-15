@@ -4,8 +4,8 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.config.VerificationConfig;
+import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.service.registration.AccountVerifier;
@@ -14,7 +14,6 @@ import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationReposi
 import pl.kj.bachelors.identity.infrastructure.service.TokenGenerationService;
 
 import java.util.Calendar;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 @Service

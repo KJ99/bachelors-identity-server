@@ -1,6 +1,5 @@
 package pl.kj.bachelors.identity.application.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,9 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,27 +19,18 @@ import pl.kj.bachelors.identity.application.dto.response.LoginResponse;
 import pl.kj.bachelors.identity.application.dto.response.PasswordResetInitResponse;
 import pl.kj.bachelors.identity.application.dto.response.TokenResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
-import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
-import pl.kj.bachelors.identity.application.exception.ForbiddenHttpException;
-import pl.kj.bachelors.identity.application.exception.NotAuthorizedHttpException;
-import pl.kj.bachelors.identity.domain.config.ApiConfig;
-import pl.kj.bachelors.identity.domain.exception.AccessDeniedException;
-import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
-import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
-import pl.kj.bachelors.identity.domain.exception.WrongCredentialsException;
+import pl.kj.bachelors.identity.domain.exception.*;
 import pl.kj.bachelors.identity.domain.model.AuthResult;
 import pl.kj.bachelors.identity.domain.model.AuthResultDetail;
 import pl.kj.bachelors.identity.domain.model.entity.PasswordReset;
 import pl.kj.bachelors.identity.domain.model.payload.PasswordAuthPayload;
 import pl.kj.bachelors.identity.domain.model.payload.TokenAuthPayload;
-import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.auth.PasswordAuthenticator;
 import pl.kj.bachelors.identity.domain.service.jwt.AccessTokenFetcher;
 import pl.kj.bachelors.identity.domain.service.jwt.RefreshTokenManager;
 import pl.kj.bachelors.identity.domain.service.jwt.TokenRefresher;
 import pl.kj.bachelors.identity.domain.service.mail.MailSender;
 import pl.kj.bachelors.identity.domain.service.registration.PasswordResetService;
-import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -127,15 +115,15 @@ public class AuthenticationApiController extends BaseApiController {
             @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true)))
     })
     public ResponseEntity<TokenResponse> refresh(HttpServletRequest request, HttpServletResponse response)
-            throws ForbiddenHttpException, NotAuthorizedHttpException {
+            throws AccessDeniedException, CredentialsNotFoundException {
         String access = this.accessTokenFetcher.getAccessTokenFromRequest(request)
-                .orElseThrow(NotAuthorizedHttpException::new);
+                .orElseThrow(CredentialsNotFoundException::new);
         String refresh = this.refreshTokenManager.getFromRequest(request)
-                .orElseThrow(NotAuthorizedHttpException::new);
+                .orElseThrow(CredentialsNotFoundException::new);
 
         AuthResult<TokenAuthPayload> result = this.tokenRefresher.refreshToken(access, refresh);
         if(result.getDetail().equals(AuthResultDetail.INVALID_TOKEN)) {
-            throw new ForbiddenHttpException();
+            throw new AccessDeniedException();
         }
 
         this.refreshTokenManager.putInResponse(result.getPayload().getRefreshToken(), response);
@@ -156,7 +144,7 @@ public class AuthenticationApiController extends BaseApiController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true)))
     })
     public ResponseEntity<PasswordResetInitResponse> initPasswordReset(@RequestBody PasswordResetInitRequest request)
-            throws BadRequestHttpException, NotFoundException, ExecutionException, InterruptedException {
+            throws NotFoundException, ExecutionException, InterruptedException, AggregatedApiError {
         this.ensureThatModelIsValid(request);
         PasswordReset passwordReset = this.passwordResetService.createPasswordReset(request.getEmail());
         this.mailer.sendPasswordResetEmail(passwordReset);
@@ -188,7 +176,7 @@ public class AuthenticationApiController extends BaseApiController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true)))
     })
     public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request)
-            throws BadRequestHttpException, AccessDeniedException, ValidationViolation, NotFoundException {
+            throws AccessDeniedException, ValidationViolation, NotFoundException, AggregatedApiError {
         this.ensureThatModelIsValid(request);
         this.passwordResetService.resetPassword(request.getToken(), request.getPin(), request.getPassword());
 

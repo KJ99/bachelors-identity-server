@@ -4,7 +4,6 @@ import com.google.common.net.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.config.JwtCookieConfig;
 import pl.kj.bachelors.identity.domain.service.jwt.AccessTokenFetcher;
 
 import javax.servlet.http.HttpServletRequest;

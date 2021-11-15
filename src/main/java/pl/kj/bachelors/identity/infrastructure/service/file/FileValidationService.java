@@ -2,7 +2,7 @@ package pl.kj.bachelors.identity.infrastructure.service.file;
 
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
-import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
+import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.service.file.FileValidator;
 
@@ -16,8 +16,8 @@ public class FileValidationService implements FileValidator {
     public void ensureThatFileIsValid(
             final byte[] content,
             final String[] allowedMediaTypes,
-            final int maxFileSize
-    ) throws BadRequestHttpException {
+            final long maxFileSize
+    ) throws AggregatedApiError {
         List<ValidationViolation> violations = new ArrayList<>();
         Tika tika = new Tika();
         String mediaType = tika.detect(content);
@@ -29,7 +29,7 @@ public class FileValidationService implements FileValidator {
         }
 
         if(violations.size() > 0) {
-            var ex = new BadRequestHttpException();
+            var ex = new AggregatedApiError();
             ex.setErrors(violations);
 
             throw ex;

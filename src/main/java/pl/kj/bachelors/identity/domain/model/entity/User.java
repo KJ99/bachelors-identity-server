@@ -1,6 +1,5 @@
 package pl.kj.bachelors.identity.domain.model.entity;
 
-import org.hibernate.annotations.Loader;
 import pl.kj.bachelors.identity.domain.model.embeddable.Audit;
 import pl.kj.bachelors.identity.domain.model.embeddable.UserSettings;
 

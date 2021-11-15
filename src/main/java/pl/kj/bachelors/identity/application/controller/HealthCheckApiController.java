@@ -4,23 +4,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
-import pl.kj.bachelors.identity.application.exception.NotAuthorizedHttpException;
 import pl.kj.bachelors.identity.application.service.HealthCheckService;
-import pl.kj.bachelors.identity.domain.annotation.Authentication;
-import pl.kj.bachelors.identity.domain.config.ApiConfig;
-import pl.kj.bachelors.identity.domain.exception.AccessDeniedException;
-import pl.kj.bachelors.identity.domain.model.entity.User;
-import pl.kj.bachelors.identity.domain.security.action.Action;
-import pl.kj.bachelors.identity.domain.service.ModelValidator;
-import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
 @RestController
 @RequestMapping(value = "/v1/health")

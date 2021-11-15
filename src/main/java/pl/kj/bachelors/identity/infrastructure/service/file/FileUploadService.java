@@ -2,10 +2,10 @@ package pl.kj.bachelors.identity.infrastructure.service.file;
 
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
+import pl.kj.bachelors.identity.domain.config.UploadConfig;
+import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.domain.service.file.FileValidator;
@@ -23,27 +23,24 @@ import java.util.Calendar;
 @Service
 public class FileUploadService implements FileUploader {
     private final FileValidator validator;
-    private final String destinationDirectory;
+    private final UploadConfig config;
 
     @Autowired
-    public FileUploadService(
-            FileValidator validator,
-            @Value("${file-upload.destination-dir}") String destinationDirectory
-    ) {
+    public FileUploadService(FileValidator validator, UploadConfig config) {
         this.validator = validator;
-        this.destinationDirectory = destinationDirectory;
+        this.config = config;
     }
 
     @Override
     public UploadedFile processUpload(
             final MultipartFile file,
             final String[] allowedMediaTypes,
-            final int maxFileSize
-    ) throws IOException, BadRequestHttpException {
+            final long maxFileSize
+    ) throws IOException, AggregatedApiError {
         this.validator.ensureThatFileIsValid(file.getBytes(), allowedMediaTypes, maxFileSize);
 
         String fileName = this.generateFileName();
-        Path path = Paths.get(this.destinationDirectory, fileName);
+        Path path = Paths.get(this.config.getDestinationDir(), fileName);
         Files.write(path, file.getBytes());
 
         return this.createUploadedFile(file, fileName);
@@ -53,7 +50,7 @@ public class FileUploadService implements FileUploader {
         Tika tika = new Tika();
 
         var uploadedFile = new UploadedFile();
-        uploadedFile.setDirectory(this.destinationDirectory);
+        uploadedFile.setDirectory(this.config.getDestinationDir());
         uploadedFile.setFileName(fileName);
         uploadedFile.setOriginalFileName(file.getOriginalFilename());
         uploadedFile.setMediaType(tika.detect(file.getBytes()));

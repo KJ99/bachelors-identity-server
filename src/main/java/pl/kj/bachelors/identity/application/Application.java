@@ -5,15 +5,12 @@ import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.apache.catalina.connector.Connector;
 import org.hibernate.validator.HibernateValidator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
-import org.springdoc.core.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,15 +30,17 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 import pl.kj.bachelors.identity.application.config.AppConfig;
-import pl.kj.bachelors.identity.application.dto.response.*;
-import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
+import pl.kj.bachelors.identity.application.config.HttpConfig;
+import pl.kj.bachelors.identity.application.dto.response.ProfileResponse;
+import pl.kj.bachelors.identity.application.dto.response.PublicProfileResponse;
+import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
+import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.HealthCheckResponse;
 import pl.kj.bachelors.identity.application.dto.response.health.SingleCheckResponse;
 import pl.kj.bachelors.identity.application.model.HealthCheckResult;
 import pl.kj.bachelors.identity.application.model.SingleCheckResult;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
@@ -58,8 +57,9 @@ import java.util.stream.Collectors;
 @EntityScan("pl.kj.bachelors.identity.domain.model")
 @Configuration
 public class Application {
-	@Value("${http.port}")
-	private int httpPort;
+	@Autowired
+	private HttpConfig httpConfig;
+
 	 @Autowired
 	private ApiConfig apiConfig;
 
@@ -109,7 +109,7 @@ public class Application {
 
 	private Connector createStandardConnector() {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-		connector.setPort(this.httpPort);
+		connector.setPort(this.httpConfig.getPort());
 
 		return connector;
 	}

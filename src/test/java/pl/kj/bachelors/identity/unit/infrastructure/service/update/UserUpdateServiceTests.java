@@ -1,20 +1,11 @@
 package pl.kj.bachelors.identity.unit.infrastructure.service.update;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.diff.JsonDiff;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
-import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.update.UserUpdateModel;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;

@@ -2,14 +2,8 @@ package pl.kj.bachelors.identity.integration.application.controller;
 
 import com.google.common.net.HttpHeaders;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.application.dto.request.ChangePasswordRequest;
-import pl.kj.bachelors.identity.infrastructure.service.auth.PasswordUpdateServiceImpl;
 import pl.kj.bachelors.identity.integration.BaseIntegrationTest;
 
 import java.nio.charset.StandardCharsets;

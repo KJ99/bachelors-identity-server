@@ -1,13 +1,9 @@
 package pl.kj.bachelors.identity.unit.infrastructure.service.registration;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.service.registration.AccountRegistrationServiceImpl;
@@ -15,7 +11,8 @@ import pl.kj.bachelors.identity.infrastructure.service.registration.AccountRegis
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AccountRegistrationServiceImplTests extends BaseTest {
     @Autowired

@@ -7,7 +7,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.kj.bachelors.identity.application.dto.response.UserVerificationResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.GenericErrorResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
-import pl.kj.bachelors.identity.application.exception.*;
-import pl.kj.bachelors.identity.domain.exception.*;
 import pl.kj.bachelors.identity.domain.config.ApiConfig;
+import pl.kj.bachelors.identity.domain.exception.*;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.security.action.Action;
 import pl.kj.bachelors.identity.domain.security.voter.Voter;
@@ -38,8 +36,6 @@ import java.util.stream.Collectors;
 abstract class BaseApiController {
     @Autowired
     protected ModelMapper mapper;
-    @Value("${spring.profiles.active}")
-    protected String activeProfile;
     @Autowired
     protected ModelValidator validator;
     @Autowired
@@ -51,7 +47,7 @@ abstract class BaseApiController {
     @Autowired(required = false)
     @SuppressWarnings("rawtypes")
     protected Set<Voter> voters;
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected  <T> T map(Object source, Class<T> destinationType) {
         return this.mapper.map(source, destinationType);
@@ -65,17 +61,9 @@ abstract class BaseApiController {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(value = { NotFoundHttpException.class, NoSuchFileException.class, NotFoundException.class})
+    @ExceptionHandler(value = { ResourceNotFoundException.class, NoSuchFileException.class, NotFoundException.class})
     protected ResponseEntity<Object> handleNotFound() {
         return ResponseEntity.notFound().build();
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(ConflictHttpException.class)
-    protected ResponseEntity<ValidationViolation> handleConflict(ConflictHttpException ex) {
-        final var bodyBuilder = ResponseEntity.status(HttpStatus.CONFLICT);
-
-        return ex.getError() != null ? bodyBuilder.body(ex.getError()) : bodyBuilder.build();
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -93,15 +81,9 @@ abstract class BaseApiController {
 
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(NotAuthorizedHttpException.class)
+    @ExceptionHandler(CredentialsNotFoundException.class)
     protected ResponseEntity<Object> handleNotAuthorized() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BadRequestHttpException.class)
-    protected ResponseEntity<Collection<ValidationErrorResponse>> handleBadRequest(BadRequestHttpException ex) {
-        return ResponseEntity.badRequest().body(this.mapCollection(ex.getErrors(), ValidationErrorResponse.class));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -110,23 +92,40 @@ abstract class BaseApiController {
         return ResponseEntity.badRequest().body(this.mapCollection(ex.getErrors(), ValidationErrorResponse.class));
     }
 
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationViolation.class)
     protected ResponseEntity<ValidationErrorResponse> handleRequestViolation(ValidationViolation ex) {
         return ResponseEntity.badRequest().body(this.map(ex, ValidationErrorResponse.class));
     }
 
+    @ExceptionHandler(value = {WrongCredentialsException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<?> handleWrongCredentials(WrongCredentialsException ex) {
+        return ResponseEntity.badRequest().build();
+    }
+
+
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(ForbiddenHttpException.class)
-    protected ResponseEntity<?> handleForbidden(ForbiddenHttpException ex) {
-        var resp = this.map(ex, GenericErrorResponse.class);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resp);
+    @ExceptionHandler(AccessDeniedException.class)
+    protected ResponseEntity<?> handleAccessDenied() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(value = { ExpiredJwtException.class, MalformedJwtException.class, JwtInvalidException.class })
-    protected ResponseEntity<?> handleJwtReject(Throwable ex) {
+    @ExceptionHandler(value = { MalformedJwtException.class, JwtInvalidException.class })
+    protected ResponseEntity<?> handleJwtReject() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = { ExpiredJwtException.class })
+    protected ResponseEntity<GenericErrorResponse<?>> handleJwtExpired() {
+        var response = new GenericErrorResponse<>();
+        response.setDetailCode("ID.101");
+        response.setDetailMessage(this.apiConfig.getErrors().get("ID.101"));
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -143,38 +142,10 @@ abstract class BaseApiController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
     }
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(value = {AccessDeniedException.class})
-    protected ResponseEntity<?> handleAccessDenied() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
-
-    @ExceptionHandler(value = {WrongCredentialsException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<?> handleWrongCredentials(WrongCredentialsException ex) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    private boolean checkProfile(String profile) {
-        return this.activeProfile.equals(profile);
-    }
-
-    protected boolean isDevelopment() {
-        return this.checkProfile("dev");
-    }
-
-    protected boolean isTesting() {
-        return this.checkProfile("test");
-    }
-
-    protected boolean isProduction() {
-        return this.checkProfile("prod");
-    }
-
-    protected <T> void ensureThatModelIsValid(T model) throws BadRequestHttpException {
+    protected <T> void ensureThatModelIsValid(T model) throws AggregatedApiError {
         var violations = this.validator.validateModel(model);
         if(violations.size() > 0) {
-            var ex = new BadRequestHttpException();
+            var ex = new AggregatedApiError();
             ex.setErrors(violations);
             throw ex;
         }

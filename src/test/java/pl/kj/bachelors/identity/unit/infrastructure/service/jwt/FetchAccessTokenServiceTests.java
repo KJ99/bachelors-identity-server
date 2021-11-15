@@ -3,16 +3,10 @@ package pl.kj.bachelors.identity.unit.infrastructure.service.jwt;
 import com.google.common.net.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
-import pl.kj.bachelors.identity.domain.config.JwtCookieConfig;
 import pl.kj.bachelors.identity.infrastructure.service.jwt.FetchAccessTokenService;
-
-import javax.servlet.http.Cookie;
 
 import java.util.Optional;
 

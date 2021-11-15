@@ -3,13 +3,10 @@ package pl.kj.bachelors.identity.unit.infrastructure.service.file;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.multipart.MultipartFile;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
-import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
+import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.infrastructure.service.file.FileUploadService;
 
 import java.io.IOException;
@@ -31,7 +28,7 @@ public class FileUploadServiceTests extends BaseTest {
     }
 
     @Test
-    public void testProcessUpload_CorrectResult() throws BadRequestHttpException, IOException {
+    public void testProcessUpload_CorrectResult() throws IOException, AggregatedApiError {
         MultipartFile file = getCorrectPdf();
         var uploadedFile = service.processUpload(file, this.allowedMediaTypes, this.maxFileSize);
 
@@ -55,8 +52,8 @@ public class FileUploadServiceTests extends BaseTest {
             MultipartFile file = getPngInPdf();
             var uploadedFile = service.processUpload(file, this.allowedMediaTypes, this.maxFileSize);
         });
-        assertThat(thrown).isInstanceOf(BadRequestHttpException.class);
-        BadRequestHttpException ex = (BadRequestHttpException) thrown;
+        assertThat(thrown).isInstanceOf(AggregatedApiError.class);
+        AggregatedApiError ex = (AggregatedApiError) thrown;
         assertThat(ex.getErrors()).isNotEmpty();
         assertThat(ex.getErrors().stream().anyMatch(err -> err.getCode().equals("FILE.01"))).isTrue();
     }
@@ -65,10 +62,10 @@ public class FileUploadServiceTests extends BaseTest {
     public void testProcessUpload_FileTooLarge() {
         Throwable thrown = catchThrowable(() -> {
             MultipartFile file = getLargePdf();
-            var uploadedFile = service.processUpload(file, this.allowedMediaTypes, this.maxFileSize);
+            service.processUpload(file, this.allowedMediaTypes, this.maxFileSize);
         });
-        assertThat(thrown).isInstanceOf(BadRequestHttpException.class);
-        BadRequestHttpException ex = (BadRequestHttpException) thrown;
+        assertThat(thrown).isInstanceOf(AggregatedApiError.class);
+        AggregatedApiError ex = (AggregatedApiError) thrown;
         assertThat(ex.getErrors()).isNotEmpty();
         assertThat(ex.getErrors().stream().anyMatch(err -> err.getCode().equals("FILE.02"))).isTrue();
     }

@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -19,17 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.kj.bachelors.identity.application.dto.response.BasicCreatedResponse;
 import pl.kj.bachelors.identity.application.dto.response.UploadedFileResponse;
 import pl.kj.bachelors.identity.application.dto.response.error.ValidationErrorResponse;
-import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
-import pl.kj.bachelors.identity.application.exception.NotAuthorizedHttpException;
-import pl.kj.bachelors.identity.application.exception.NotFoundHttpException;
 import pl.kj.bachelors.identity.domain.annotation.Authentication;
-import pl.kj.bachelors.identity.domain.config.ApiConfig;
+import pl.kj.bachelors.identity.domain.config.UploadConfig;
+import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
+import pl.kj.bachelors.identity.domain.exception.CredentialsNotFoundException;
+import pl.kj.bachelors.identity.domain.exception.ResourceNotFoundException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
-import pl.kj.bachelors.identity.domain.service.ModelValidator;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
-import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,20 +40,17 @@ public class ResourceApiController extends BaseApiController {
 
     private final FileUploader fileUploadService;
     private final UploadedFileRepository uploadedFileRepository;
-    private final int maxFileSize;
-    private final String[] allowedMediaTypes;
+    private final UploadConfig config;
 
     @Autowired
     ResourceApiController(
             FileUploader fileUploadService,
             UploadedFileRepository uploadedFileRepository,
-            @Value("${file-upload.max-size}") int maxFileSize,
-            @Value("${file-upload.allowed-types}") String[] allowedMediaTypes
-    ) {
+
+            UploadConfig config) {
         this.fileUploadService = fileUploadService;
         this.uploadedFileRepository = uploadedFileRepository;
-        this.maxFileSize = maxFileSize;
-        this.allowedMediaTypes = allowedMediaTypes;
+        this.config = config;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -82,12 +76,12 @@ public class ResourceApiController extends BaseApiController {
     })
     public ResponseEntity<?> post(
             @RequestParam("file") final MultipartFile file
-    ) throws IOException, BadRequestHttpException, NotAuthorizedHttpException {
-        User user = this.getUser().orElseThrow(NotAuthorizedHttpException::new);
+    ) throws IOException, CredentialsNotFoundException, AggregatedApiError {
+        User user = this.getUser().orElseThrow(CredentialsNotFoundException::new);
         final UploadedFile resultEntity = this.fileUploadService.processUpload(
                 file,
-                this.allowedMediaTypes,
-                this.maxFileSize
+                this.config.getAllowedTypes(),
+                this.config.getMaxSize()
         );
 
         this.uploadedFileRepository.save(resultEntity);
@@ -114,14 +108,18 @@ public class ResourceApiController extends BaseApiController {
             ),
             description = "File data"
     )
-    public ResponseEntity<UploadedFileResponse> getParticular(@PathVariable("id") int id) throws NotFoundHttpException {
-        final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id).orElseThrow(NotFoundHttpException::new);
+    public ResponseEntity<UploadedFileResponse> getParticular(@PathVariable("id") int id)
+            throws ResourceNotFoundException {
+        final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
         return ResponseEntity.ok(this.map(uploadedFile, UploadedFileResponse.class));
     }
 
     @GetMapping("/{id}/download")
-    public ResponseEntity<Resource> download(@PathVariable("id") Integer id) throws NotFoundHttpException, IOException {
-        final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id).orElseThrow(NotFoundHttpException::new);
+    public ResponseEntity<Resource> download(@PathVariable("id") Integer id)
+            throws IOException, ResourceNotFoundException {
+        final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
         final Path path = Paths.get(uploadedFile.getDirectory(), uploadedFile.getFileName());
         ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 

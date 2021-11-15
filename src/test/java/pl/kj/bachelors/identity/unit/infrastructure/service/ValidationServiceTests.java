@@ -2,10 +2,7 @@ package pl.kj.bachelors.identity.unit.infrastructure.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import pl.kj.bachelors.identity.BaseTest;
-import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.fixture.model.ExampleValidatableModel;
 import pl.kj.bachelors.identity.infrastructure.service.ValidationService;
 
