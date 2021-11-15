@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
 import pl.kj.bachelors.identity.domain.exception.JwtInvalidException;
@@ -17,9 +18,7 @@ import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@ContextConfiguration(classes = {Application.class})
-public class ParseJwtServiceTests {
+public class ParseJwtServiceTests extends BaseTest {
     @Autowired
     private ParseJwtService service;
 

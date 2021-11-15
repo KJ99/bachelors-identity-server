@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.infrastructure.service.TokenGenerationService;
 
@@ -11,9 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ContextConfiguration(classes = { Application.class })
-public class TokenGenerationServiceTests {
+public class TokenGenerationServiceTests extends BaseTest {
     @Autowired
     private TokenGenerationService service;
 

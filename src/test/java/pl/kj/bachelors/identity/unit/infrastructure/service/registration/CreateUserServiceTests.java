@@ -4,15 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.infrastructure.service.registration.CreateUserService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ContextConfiguration(classes = { Application.class })
-public class CreateUserServiceTests {
+public class CreateUserServiceTests extends BaseTest {
     @Autowired
     private CreateUserService service;
 

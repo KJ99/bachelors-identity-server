@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.PasswordConfig;
 import pl.kj.bachelors.identity.domain.exception.AccountNotVerifiedException;
@@ -23,35 +24,22 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
-@SpringBootTest
-@ContextConfiguration(classes = { Application.class })
-public class PasswordAuthenticationServiceTests {
+public class PasswordAuthenticationServiceTests extends BaseTest {
     @Autowired
     private PasswordAuthenticationService service;
     @Autowired
-    private PasswordConfig passwordConfig;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private UserVerificationRepository verificationRepository;
-    private final String correctEmail = "correct-email@testaroo.test";
-    private final String correctUsername = "usernamo";
-    private final String correctPassword = "P@ssw0rdo";
 
     @Test
     public void testAuthenticate_Correct_ByEmail() throws AccountNotVerifiedException, WrongCredentialsException {
-        this.loadUser(this.correctEmail, this.correctUsername, this.correctPassword, true);
-
-        AuthResult<PasswordAuthPayload> result = this.service.authenticate(this.correctEmail, this.correctPassword);
+        AuthResult<PasswordAuthPayload> result = this.service.authenticate("activeuser1@fakemail", "foobar");
 
         this.checkCorrectResult(result);
     }
 
     @Test
     public void testAuthenticate_Correct_ByUsername() throws AccountNotVerifiedException, WrongCredentialsException {
-        this.loadUser(this.correctEmail, this.correctUsername, this.correctPassword, true);
-
-        AuthResult<PasswordAuthPayload> result = this.service.authenticate(this.correctUsername, this.correctPassword);
+        AuthResult<PasswordAuthPayload> result = this.service.authenticate("active-1", "foobar");
 
         this.checkCorrectResult(result);
     }
@@ -61,7 +49,7 @@ public class PasswordAuthenticationServiceTests {
         assertThat(result.getDetail()).isEqualTo(AuthResultDetail.SUCCESS);
         assertThat(result.getPayload()).isNotNull();
         assertThat(result.getPayload().getUser()).isNotNull();
-        assertThat(result.getPayload().getUser().getEmail()).isEqualTo(this.correctEmail);
+        assertThat(result.getPayload().getUser().getEmail()).isEqualTo("activeuser1@fakemail");
         assertThat(result.getPayload().getToken()).isNotNull();
         assertThat(result.getPayload().getToken().getAccessToken()).isNotEmpty();
         assertThat(result.getPayload().getToken().getRefreshToken()).isNotEmpty();
@@ -69,54 +57,21 @@ public class PasswordAuthenticationServiceTests {
 
     @Test
     public void testAuthenticate_WrongPassword() {
-        this.loadUser(this.correctEmail, this.correctUsername, this.correctPassword, true);
-
-        assertThatThrownBy(() -> this.service.authenticate(this.correctUsername, "fake-pass"))
+        assertThatThrownBy(() -> this.service.authenticate("active-1", "fake-pass"))
                 .isInstanceOf(WrongCredentialsException.class);
 
     }
 
     @Test
     public void testAuthenticate_AccountNotVerified() {
-        var user = this.loadUser(this.correctEmail, this.correctUsername, this.correctPassword, false);
-        var verification = this.loadVerification(user);
+        var verification = this.verificationRepository.findByToken("active-token-1").orElseThrow();
 
-        Throwable thrown = catchThrowable(() -> this.service.authenticate(this.correctEmail, this.correctPassword));
+        Throwable thrown = catchThrowable(() -> this.service.authenticate("notverified1@fakemail", "foobar"));
 
         assertThat(thrown).isInstanceOf(AccountNotVerifiedException.class);
         AccountNotVerifiedException ex = (AccountNotVerifiedException) thrown;
         assertThat(ex.getCode()).isEqualTo("ID.031");
         assertThat(ex.getLatestVerification()).isNotNull();
         assertThat(ex.getLatestVerification().getToken()).isEqualTo(verification.getToken());
-    }
-
-    private User loadUser(String email, String username, String password, boolean verified) {
-        String salt = BCrypt.gensalt(this.passwordConfig.getSaltRounds());
-        String hash = BCrypt.hashpw(password, salt);
-        User user = new User();
-        user.setUid("uid-10");
-        user.setEmail(email);
-        user.setUserName(username);
-        user.setFirstName("Abc");
-        user.setLastName("Abc");
-        user.setPassword(hash);
-        user.setVerified(verified);
-        user.setActive(true);
-
-        this.userRepository.saveAndFlush(user);
-
-        return user;
-    }
-
-    private UserVerification loadVerification(User user) {
-        UserVerification verification = new UserVerification();
-        verification.setExpiresAt(Calendar.getInstance());
-        verification.setPin("000000");
-        verification.setToken("veri-token");
-        verification.setUser(user);
-
-        this.verificationRepository.saveAndFlush(verification);
-
-        return verification;
     }
 }

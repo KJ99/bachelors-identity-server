@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.JwtCookieConfig;
 import pl.kj.bachelors.identity.infrastructure.service.jwt.RefreshTokenManagementService;
@@ -16,9 +17,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ContextConfiguration(classes = { Application.class })
-public class RefreshTokenManagementServiceTests {
+public class RefreshTokenManagementServiceTests extends BaseTest {
     @Autowired
     private RefreshTokenManagementService service;
     @Autowired

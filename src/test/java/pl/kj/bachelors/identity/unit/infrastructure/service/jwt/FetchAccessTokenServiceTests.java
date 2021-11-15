@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
 import pl.kj.bachelors.identity.domain.config.JwtCookieConfig;
@@ -17,9 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ContextConfiguration(classes = {Application.class})
-public class FetchAccessTokenServiceTests {
+public class FetchAccessTokenServiceTests extends BaseTest {
     @Autowired
     private FetchAccessTokenService service;
 

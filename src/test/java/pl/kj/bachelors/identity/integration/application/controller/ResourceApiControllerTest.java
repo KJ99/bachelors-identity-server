@@ -16,6 +16,7 @@ import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
+import pl.kj.bachelors.identity.integration.BaseIntegrationTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,16 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@SpringBootTest
-@AutoConfigureMockMvc
-@ContextConfiguration(classes = { Application.class })
-@ComponentScan(basePackages = "pl.kj.bachelors.identity")
-public class ResourceApiControllerTest {
+public class ResourceApiControllerTest extends BaseIntegrationTest {
     @MockBean private FileUploader fileUploader;
     @MockBean private UploadedFileRepository uploadedFileRepository;
 
@@ -62,7 +59,12 @@ public class ResourceApiControllerTest {
 
     @Test
     public void testPost() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(multipart("/v1/resources").file("file", this.file.getBytes()))
+        String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateValidAccessToken("uid-active-1"));
+
+        MvcResult mvcResult = mockMvc.perform(
+                    multipart("/v1/resources").file("file", this.file.getBytes())
+                            .header("Authorization", auth)
+                )
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -74,18 +76,17 @@ public class ResourceApiControllerTest {
         var uploadedFile = new UploadedFile();
         uploadedFile.setFileName("World");
         uploadedFile.setOriginalFileName("Hello");
-        uploadedFile.setId(10);
+        uploadedFile.setId(1);
         uploadedFile.setMediaType("application/json");
 
         given(this.uploadedFileRepository.findById(1)).willReturn(Optional.of(uploadedFile));
-
 
         MvcResult mvcResult = mockMvc.perform(get("/v1/resources/1"))
                 .andExpect(status().isOk())
                 .andReturn();
 
         assertThat(mvcResult.getResponse().getContentAsString())
-                .contains("10")
+                .contains("1")
                 .contains("Hello")
                 .contains("application/json");
     }

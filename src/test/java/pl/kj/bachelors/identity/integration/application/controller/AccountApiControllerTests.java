@@ -10,11 +10,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.kj.bachelors.identity.application.Application;
+import pl.kj.bachelors.identity.application.dto.request.AccountVerificationRequest;
+import pl.kj.bachelors.identity.application.dto.request.RegistrationRequest;
+import pl.kj.bachelors.identity.application.dto.request.VerificationResendRequest;
 import pl.kj.bachelors.identity.domain.config.PasswordConfig;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserVerificationRepository;
+import pl.kj.bachelors.identity.integration.BaseIntegrationTest;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -25,11 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@ContextConfiguration(classes = { Application.class })
-@ComponentScan(basePackages = "pl.kj.bachelors.identity")
-@AutoConfigureMockMvc
-public class AccountApiControllerTests {
+public class AccountApiControllerTests extends BaseIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -42,14 +42,15 @@ public class AccountApiControllerTests {
 
     @Test
     public void testPost_Created() throws Exception {
-        String requestBody = "{" +
-                "\"email\": \"testmail@test.eu\"," +
-                "\"username\": \"someusername\"," +
-                "\"first_name\": \"John\"," +
-                "\"last_name\": \"Doe\"," +
-                "\"password\": \"P@ssw0rd\"," +
-                "\"confirm_password\": \"P@ssw0rd\"" +
-                "}";
+        RegistrationRequest request = new RegistrationRequest();
+        request.setEmail("testmail@test.eu");
+        request.setUsername("someusername");
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setPassword("P@ssw0rd");
+        request.setConfirmPassword("P@ssw0rd");
+        String requestBody = this.serialize(request);
+
         MvcResult result = mockMvc.perform(
                 post("/v1/account")
                         .contentType("application/json")
@@ -60,14 +61,15 @@ public class AccountApiControllerTests {
 
     @Test
     public void testPost_BadRequest() throws Exception {
-        String requestBody = "{" +
-                "\"email\": \"testmailtest.eu\"," +
-                "\"username\": \"a\"," +
-                "\"first_name\": \"John\"," +
-                "\"last_name\": \"Doe\"," +
-                "\"password\": \"ab\"," +
-                "\"confirm_password\": \"P@ssw0rd\"" +
-                "}";
+        RegistrationRequest request = new RegistrationRequest();
+        request.setEmail("testmail@test.eu");
+        request.setUsername("a");
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setPassword("P@ssw0rd");
+        request.setConfirmPassword("P@ssw0rd");
+        String requestBody = this.serialize(request);
+
         var result = mockMvc.perform(
                 post("/v1/account")
                         .contentType("application/json")
@@ -81,18 +83,16 @@ public class AccountApiControllerTests {
 
     @Test
     public void testPost_Conflict() throws Exception {
-        var user = this.loadSampleUser();
-        String requestBody = String.format(
-                "{" +
-                "\"email\": \"%s\"," +
-                "\"username\": \"someusername\"," +
-                "\"first_name\": \"John\"," +
-                "\"last_name\": \"Doe\"," +
-                "\"password\": \"P@ssw0rd\"," +
-                "\"confirm_password\": \"P@ssw0rd\"" +
-                "}",
-                user.getEmail()
-        );
+        var user = this.userRepository.findById("uid-active-1").orElseThrow();
+        RegistrationRequest request = new RegistrationRequest();
+        request.setEmail(user.getEmail());
+        request.setUsername("someusername");
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setPassword("P@ssw0rd");
+        request.setConfirmPassword("P@ssw0rd");
+        String requestBody = this.serialize(request);
+
         MvcResult result = mockMvc.perform(
                 post("/v1/account")
                         .contentType("application/json")
@@ -103,8 +103,12 @@ public class AccountApiControllerTests {
 
     @Test
     public void testVerificationResend() throws Exception {
-        var user = this.loadSampleUser();
-        String requestBody = String.format("{\"email\": \"%s\"}", user.getEmail());
+        var user = this.userRepository.findById("uid-not-verified-1").orElseThrow();
+
+        VerificationResendRequest request = new VerificationResendRequest();
+        request.setEmail(user.getEmail());
+        String requestBody = this.serialize(request);
+
         var result = mockMvc.perform(
                 post("/v1/account/verification/resend")
                         .contentType("application/json")
@@ -116,7 +120,10 @@ public class AccountApiControllerTests {
 
     @Test
     public void testVerificationResend_NotFound() throws Exception {
-        String requestBody = "{\"email\": \"fake-email\"}";
+        VerificationResendRequest request = new VerificationResendRequest();
+        request.setEmail("fake-mail");
+        String requestBody = this.serialize(request);
+
         mockMvc.perform(
                 post("/v1/account/verification/resend")
                         .contentType("application/json")
@@ -126,13 +133,11 @@ public class AccountApiControllerTests {
 
     @Test
     public void testVerify() throws Exception {
-        var user = this.loadSampleUser();
-        var verification = this.loadSampleVerification(user);
-        String requestBody = String.format(
-                "{\"token\": \"%s\", \"pin\": \"%s\"}",
-                verification.getToken(),
-                verification.getPin()
-        );
+        var verification = this.verificationRepository.findByToken("active-token-1").orElseThrow();
+        AccountVerificationRequest request = new AccountVerificationRequest();
+        request.setToken(verification.getToken());
+        request.setPin(verification.getPin());
+        String requestBody = this.serialize(request);
 
         mockMvc.perform(
                 put("/v1/account/verify")
@@ -143,12 +148,11 @@ public class AccountApiControllerTests {
 
     @Test
     public void testVerify_NotFound() throws Exception {
-        var user = this.loadSampleUser();
-        var verification = this.loadSampleVerification(user);
-        String requestBody = String.format(
-                "{\"token\": \"fake-token\", \"pin\": \"%s\"}",
-                verification.getToken()
-        );
+        var verification = this.verificationRepository.findByToken("active-token-1").orElseThrow();
+        AccountVerificationRequest request = new AccountVerificationRequest();
+        request.setToken("fake-token");
+        request.setPin(verification.getPin());
+        String requestBody = this.serialize(request);
 
         mockMvc.perform(
                 put("/v1/account/verify")
@@ -159,12 +163,10 @@ public class AccountApiControllerTests {
 
     @Test
     public void testVerify_BadRequest() throws Exception {
-        var user = this.loadSampleUser();
-        var verification = this.loadSampleVerification(user);
-        String requestBody = String.format(
-                "{\"token\": \"%s\", \"pin\": \"fake-pin\"}",
-                verification.getToken()
-        );
+        var verification = this.verificationRepository.findByToken("active-token-1").orElseThrow();        AccountVerificationRequest request = new AccountVerificationRequest();
+        request.setToken(verification.getToken());
+        request.setPin("fake-pin");
+        String requestBody = this.serialize(request);
 
         var result = mockMvc.perform(
                 put("/v1/account/verify")
@@ -186,33 +188,5 @@ public class AccountApiControllerTests {
         ).andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString()).contains("available");
-    }
-
-
-    private User loadSampleUser() {
-        User user = new User();
-        user.setUid("uid-10");
-        user.setEmail(UUID.randomUUID().toString().concat("@testaroomail.mail"));
-        user.setUserName(UUID.randomUUID().toString());
-        user.setFirstName("Abc");
-        user.setLastName("Abc");
-        user.setPassword("pass");
-
-        this.userRepository.saveAndFlush(user);
-
-        return user;
-    }
-
-    private UserVerification loadSampleVerification(User user) {
-        var verification = new UserVerification();
-        verification.setUser(user);
-        verification.setPin("123456");
-        verification.setToken("some-token");
-        verification.setExpiresAt(Calendar.getInstance());
-        verification.getExpiresAt().add(Calendar.HOUR, 10);
-
-        this.verificationRepository.saveAndFlush(verification);
-
-        return verification;
     }
 }

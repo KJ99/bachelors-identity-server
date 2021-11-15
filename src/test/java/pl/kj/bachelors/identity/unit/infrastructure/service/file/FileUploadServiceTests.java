@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.multipart.MultipartFile;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.application.exception.BadRequestHttpException;
 import pl.kj.bachelors.identity.infrastructure.service.file.FileUploadService;
@@ -15,9 +16,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@ContextConfiguration(classes = { Application.class })
-public class FileUploadServiceTests {
+public class FileUploadServiceTests extends BaseTest {
 
     @Autowired
     private FileUploadService service;

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.config.JwtConfig;
 import pl.kj.bachelors.identity.domain.model.AuthResult;
@@ -20,9 +21,7 @@ import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ContextConfiguration(classes = { Application.class })
-public class RefreshTokenServiceTests {
+public class RefreshTokenServiceTests extends BaseTest {
     @Autowired
     private RefreshTokenService service;
 
@@ -38,9 +37,8 @@ public class RefreshTokenServiceTests {
         Calendar refreshExpiresAt = Calendar.getInstance();
         accessExpiresAt.add(Calendar.HOUR, -1);
         refreshExpiresAt.add(Calendar.HOUR, 1);
-        var user = this.loadUser(true);
-        String access = this.getJwt(accessExpiresAt,user.getUid());
-        String refresh = this.getJwt(refreshExpiresAt, user.getUid());
+        String access = this.getJwt(accessExpiresAt, "uid-active-1");
+        String refresh = this.getJwt(refreshExpiresAt, "uid-active-1");
 
         AuthResult<TokenAuthPayload> result = this.service.refreshToken(access, refresh);
 
@@ -61,9 +59,8 @@ public class RefreshTokenServiceTests {
         Calendar refreshExpiresAt = Calendar.getInstance();
         accessExpiresAt.add(Calendar.HOUR, -1);
         refreshExpiresAt.add(Calendar.HOUR, 1);
-        var user = this.loadUser(false);
-        String access = this.getJwt(accessExpiresAt,user.getUid());
-        String refresh = this.getJwt(refreshExpiresAt,user.getUid());
+        String access = this.getJwt(accessExpiresAt, "uid-active-1");
+        String refresh = this.getJwt(refreshExpiresAt, "uid-active-2");
 
         AuthResult<TokenAuthPayload> result = this.service.refreshToken(access, refresh);
 
@@ -78,8 +75,8 @@ public class RefreshTokenServiceTests {
         accessExpiresAt.add(Calendar.HOUR, -1);
         refreshExpiresAt.add(Calendar.HOUR, 1);
 
-        String access = this.getJwt(accessExpiresAt,"uid-1");
-        String refresh = this.getJwt(refreshExpiresAt,"uid-2");
+        String access = this.getJwt(accessExpiresAt,"uid-not-verified-1");
+        String refresh = this.getJwt(refreshExpiresAt,"uid-not-verified-1");
 
         AuthResult<TokenAuthPayload> result = this.service.refreshToken(access, refresh);
 
@@ -96,19 +93,5 @@ public class RefreshTokenServiceTests {
         builder.signWith(SignatureAlgorithm.forName(this.jwtConfig.getAlgorithm()), spec);
 
         return builder.compact();
-    }
-
-    private User loadUser(boolean active) {
-        User user = new User();
-        user.setUid("uid-1");
-        user.setUserName("username");
-        user.setEmail("email@email.pl");
-        user.setFirstName("Ab");
-        user.setLastName("Ba");
-        user.setPassword("pass");
-        user.setActive(active);
-        this.userRepository.saveAndFlush(user);
-
-        return user;
     }
 }

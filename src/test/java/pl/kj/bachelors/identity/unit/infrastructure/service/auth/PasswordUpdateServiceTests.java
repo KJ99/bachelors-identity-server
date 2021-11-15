@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import pl.kj.bachelors.identity.BaseTest;
 import pl.kj.bachelors.identity.application.Application;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.exception.WrongCredentialsException;
@@ -20,11 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
-@SpringBootTest
-@ContextConfiguration(classes = {Application.class})
-@Sql(value = "/db.test/seed.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = "/db.test/clear.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class PasswordUpdateServiceTests {
+public class PasswordUpdateServiceTests extends BaseTest {
     @Autowired
     private PasswordUpdateServiceImpl service;
     @Autowired
