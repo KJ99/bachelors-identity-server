@@ -1,5 +1,8 @@
 package pl.kj.bachelors.identity.infrastructure.service.file;
 
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.BucketInfo;
+import com.google.cloud.storage.Storage;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,26 +12,29 @@ import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.domain.service.file.FileValidator;
+import pl.kj.bachelors.identity.infrastructure.config.GoogleStorageConfig;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
+import java.util.UUID;
 
 @Service
 public class FileUploadService implements FileUploader {
     private final FileValidator validator;
     private final UploadConfig config;
+    private final Storage storage;
+    private GoogleStorageConfig storageConfig;
 
     @Autowired
-    public FileUploadService(FileValidator validator, UploadConfig config) {
+    public FileUploadService(FileValidator validator, UploadConfig config, Storage storage, GoogleStorageConfig storageConfig) {
         this.validator = validator;
         this.config = config;
+        this.storage = storage;
+        this.storageConfig = storageConfig;
     }
 
     @Override
@@ -40,8 +46,9 @@ public class FileUploadService implements FileUploader {
         this.validator.ensureThatFileIsValid(file.getBytes(), allowedMediaTypes, maxFileSize);
 
         String fileName = this.generateFileName();
-        Path path = Paths.get(this.config.getDestinationDir(), fileName);
-        Files.write(path, file.getBytes());
+
+        Bucket bucket = this.storage.get(this.storageConfig.getBucketName());
+        bucket.create(fileName, file.getBytes());
 
         return this.createUploadedFile(file, fileName);
     }
