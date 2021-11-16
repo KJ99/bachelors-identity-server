@@ -1,6 +1,12 @@
 package pl.kj.bachelors.identity.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.AccessToken;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -21,6 +27,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -46,11 +54,16 @@ import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 import pl.kj.bachelors.identity.domain.model.update.UserUpdateModel;
+import pl.kj.bachelors.identity.infrastructure.config.GoogleStorageConfig;
 
 import javax.sql.DataSource;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.PrivateKey;
 import java.util.stream.Collectors;
 
 @SpringBootApplication(scanBasePackages = "pl.kj.bachelors")
@@ -69,6 +82,9 @@ public class Application {
 
 	@Autowired
 	private JwtConfig jwtConfig;
+
+	@Autowired
+	private GoogleStorageConfig storageConfig;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -93,6 +109,18 @@ public class Application {
 		return new OpenAPI()
 				.components(swaggerComponents)
 				.info(apiInfo);
+	}
+
+	@Bean
+	@Profile({"!prod"})
+	public Storage storage() throws IOException {
+		Resource googleJson = new ClassPathResource(this.storageConfig.getLocalCredentialsPath());
+		Credentials credentials = GoogleCredentials.fromStream(googleJson.getInputStream());
+		StorageOptions.Builder storageBuilder = StorageOptions.newBuilder();
+		storageBuilder.setCredentials(credentials);
+		storageBuilder.setProjectId(this.storageConfig.getProjectId());
+
+		return storageBuilder.build().getService();
 	}
 
 	@Bean

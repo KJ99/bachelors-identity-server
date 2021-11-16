@@ -1,5 +1,6 @@
 package pl.kj.bachelors.identity.application.controller;
 
+import com.google.cloud.storage.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,12 +27,11 @@ import pl.kj.bachelors.identity.domain.exception.ResourceNotFoundException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
+import pl.kj.bachelors.identity.infrastructure.config.GoogleStorageConfig;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/v1/resources")
@@ -41,16 +41,20 @@ public class ResourceApiController extends BaseApiController {
     private final FileUploader fileUploadService;
     private final UploadedFileRepository uploadedFileRepository;
     private final UploadConfig config;
+    private final Storage storage;
+    private final GoogleStorageConfig storageConfig;
 
     @Autowired
     ResourceApiController(
             FileUploader fileUploadService,
             UploadedFileRepository uploadedFileRepository,
 
-            UploadConfig config) {
+            UploadConfig config, Storage storage, GoogleStorageConfig storageConfig) {
         this.fileUploadService = fileUploadService;
         this.uploadedFileRepository = uploadedFileRepository;
         this.config = config;
+        this.storage = storage;
+        this.storageConfig = storageConfig;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -120,8 +124,11 @@ public class ResourceApiController extends BaseApiController {
             throws IOException, ResourceNotFoundException {
         final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
-        final Path path = Paths.get(uploadedFile.getDirectory(), uploadedFile.getFileName());
-        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        BlobId blobId = BlobId.of(this.storageConfig.getBucketName(), uploadedFile.getFileName());
+        Blob blob = this.storage.get(blobId);
+
+        ByteArrayResource resource = new ByteArrayResource(blob.getContent());
 
         this.logger.info(
                 String.format("File with name %s was sent to address %s",
