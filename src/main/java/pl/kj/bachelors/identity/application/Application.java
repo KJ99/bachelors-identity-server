@@ -124,6 +124,12 @@ public class Application {
 	}
 
 	@Bean
+	@Profile({"prod"})
+	public Storage storageProd() {
+		return StorageOptions.newBuilder().build().getService();
+	}
+
+	@Bean
 	public ModelResolver modelResolver(ObjectMapper objectMapper) {
 		return new ModelResolver(objectMapper);
 	}
