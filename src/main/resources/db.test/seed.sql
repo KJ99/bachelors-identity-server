@@ -1,7 +1,7 @@
-insert into uploaded_files (id, directory, file_name, original_file_name, media_type) values
-    (1, 'dir', 'filename.jpg', 'or-filename.jpg', 'image/jpg'),
-    (2, 'dir', 'filename.jpg', 'or-filename.jpg', 'image/jpg'),
-    (3, 'dir', 'filename.jpg', 'or-filename.jpg', 'image/jpg');
+insert into uploaded_files (id, file_name, original_file_name, media_type) values
+    (1, 'filename.jpg', 'or-filename.jpg', 'image/jpg'),
+    (2, 'filename.jpg', 'or-filename.jpg', 'image/jpg'),
+    (3, 'filename.jpg', 'or-filename.jpg', 'image/jpg');
 
 insert into users (uid, email, username, first_name, last_name, password, picture_id, verified, active) values
     ('uid-active-1', 'activeuser1@fakemail', 'active-1', 'John', 'Doe', '$2a$12$6X.w8yRJeeAAGWQe3x6cJOXgb7LLyzMmclyswP9lAcwCY1klKosEC', 3, 1, 1),

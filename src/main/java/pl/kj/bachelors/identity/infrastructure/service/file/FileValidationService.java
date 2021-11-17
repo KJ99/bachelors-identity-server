@@ -4,15 +4,14 @@ import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
-import pl.kj.bachelors.identity.domain.service.file.FileValidator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class FileValidationService implements FileValidator {
-    @Override
+public class FileValidationService {
+
     public void ensureThatFileIsValid(
             final byte[] content,
             final String[] allowedMediaTypes,

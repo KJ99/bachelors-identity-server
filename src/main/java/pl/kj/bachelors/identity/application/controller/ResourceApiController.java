@@ -26,12 +26,12 @@ import pl.kj.bachelors.identity.domain.exception.CredentialsNotFoundException;
 import pl.kj.bachelors.identity.domain.exception.ResourceNotFoundException;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
+import pl.kj.bachelors.identity.domain.service.file.FileReader;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
 import pl.kj.bachelors.identity.infrastructure.config.GoogleStorageConfig;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 
 import java.io.IOException;
-import java.nio.file.Files;
 
 @RestController
 @RequestMapping("/v1/resources")
@@ -41,20 +41,19 @@ public class ResourceApiController extends BaseApiController {
     private final FileUploader fileUploadService;
     private final UploadedFileRepository uploadedFileRepository;
     private final UploadConfig config;
-    private final Storage storage;
-    private final GoogleStorageConfig storageConfig;
+    private final FileReader fileReader;
 
     @Autowired
     ResourceApiController(
             FileUploader fileUploadService,
             UploadedFileRepository uploadedFileRepository,
-
-            UploadConfig config, Storage storage, GoogleStorageConfig storageConfig) {
+            UploadConfig config,
+            FileReader fileReader
+    ) {
         this.fileUploadService = fileUploadService;
         this.uploadedFileRepository = uploadedFileRepository;
         this.config = config;
-        this.storage = storage;
-        this.storageConfig = storageConfig;
+        this.fileReader = fileReader;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -78,7 +77,7 @@ public class ResourceApiController extends BaseApiController {
                     )
             )
     })
-    public ResponseEntity<?> post(
+    public ResponseEntity<UploadedFileResponse> post(
             @RequestParam("file") final MultipartFile file
     ) throws IOException, CredentialsNotFoundException, AggregatedApiError {
         User user = this.getUser().orElseThrow(CredentialsNotFoundException::new);
@@ -99,8 +98,7 @@ public class ResourceApiController extends BaseApiController {
                 )
         );
 
-        var response = new BasicCreatedResponse<>(resultEntity.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.map(resultEntity, UploadedFileResponse.class));
     }
 
     @GetMapping("/{id}")
@@ -121,14 +119,12 @@ public class ResourceApiController extends BaseApiController {
 
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> download(@PathVariable("id") Integer id)
-            throws IOException, ResourceNotFoundException {
+            throws ResourceNotFoundException {
         final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        BlobId blobId = BlobId.of(this.storageConfig.getBucketName(), uploadedFile.getFileName());
-        Blob blob = this.storage.get(blobId);
-
-        ByteArrayResource resource = new ByteArrayResource(blob.getContent());
+        byte[] content = this.fileReader.readFile(uploadedFile);
+        ByteArrayResource resource = new ByteArrayResource(content);
 
         this.logger.info(
                 String.format("File with name %s was sent to address %s",

@@ -46,3 +46,7 @@ jwt:
     domain: ''
 api:
   host: 'localhost:8443'
+google-storage:
+  project-id: ''
+  local-credentials-path: ''
+  bucket-name: ''

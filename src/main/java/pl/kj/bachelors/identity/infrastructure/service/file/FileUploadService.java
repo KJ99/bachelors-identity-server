@@ -1,7 +1,6 @@
 package pl.kj.bachelors.identity.infrastructure.service.file;
 
 import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import pl.kj.bachelors.identity.domain.config.UploadConfig;
 import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
-import pl.kj.bachelors.identity.domain.service.file.FileValidator;
 import pl.kj.bachelors.identity.infrastructure.config.GoogleStorageConfig;
 
 import javax.xml.bind.DatatypeConverter;
@@ -20,21 +18,18 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
-import java.util.UUID;
 
 @Service
 public class FileUploadService implements FileUploader {
-    private final FileValidator validator;
-    private final UploadConfig config;
+    private final FileValidationService validator;
     private final Storage storage;
-    private GoogleStorageConfig storageConfig;
+    private final GoogleStorageConfig config;
 
     @Autowired
-    public FileUploadService(FileValidator validator, UploadConfig config, Storage storage, GoogleStorageConfig storageConfig) {
+    public FileUploadService(FileValidationService validator, Storage storage, GoogleStorageConfig config) {
         this.validator = validator;
-        this.config = config;
         this.storage = storage;
-        this.storageConfig = storageConfig;
+        this.config = config;
     }
 
     @Override
@@ -47,7 +42,7 @@ public class FileUploadService implements FileUploader {
 
         String fileName = this.generateFileName();
 
-        Bucket bucket = this.storage.get(this.storageConfig.getBucketName());
+        Bucket bucket = this.storage.get(this.config.getBucketName());
         bucket.create(fileName, file.getBytes());
 
         return this.createUploadedFile(file, fileName);
@@ -57,7 +52,6 @@ public class FileUploadService implements FileUploader {
         Tika tika = new Tika();
 
         var uploadedFile = new UploadedFile();
-        uploadedFile.setDirectory(this.config.getDestinationDir());
         uploadedFile.setFileName(fileName);
         uploadedFile.setOriginalFileName(file.getOriginalFilename());
         uploadedFile.setMediaType(tika.detect(file.getBytes()));
