@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -134,6 +135,7 @@ public class ProfileApiController extends BaseApiController {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true)))
     })
+    @Cacheable("public-profiles")
     public ResponseEntity<PublicProfileResponse> getPublicProfile(@PathVariable("id") String id)
             throws ResourceNotFoundException {
         User user = this.userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);

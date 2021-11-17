@@ -23,6 +23,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -64,11 +67,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.PrivateKey;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @SpringBootApplication(scanBasePackages = "pl.kj.bachelors")
 @EnableJpaRepositories("pl.kj.bachelors.identity.infrastructure.repository")
 @EntityScan("pl.kj.bachelors.identity.domain.model")
+@EnableCaching
 @Configuration
 public class Application {
 	@Autowired

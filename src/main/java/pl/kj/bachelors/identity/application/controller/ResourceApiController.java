@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -118,6 +119,7 @@ public class ResourceApiController extends BaseApiController {
     }
 
     @GetMapping("/{id}/download")
+    @Cacheable("files")
     public ResponseEntity<Resource> download(@PathVariable("id") Integer id)
             throws ResourceNotFoundException {
         final UploadedFile uploadedFile = this.uploadedFileRepository.findById(id)
