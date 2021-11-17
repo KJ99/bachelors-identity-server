@@ -112,8 +112,8 @@ public class Application {
 	}
 
 	@Bean
-	@Profile({"!prod"})
-	public Storage storage() throws IOException {
+	@Profile({"local"})
+	public Storage storageLocal() throws IOException {
 		Resource googleJson = new ClassPathResource(this.storageConfig.getLocalCredentialsPath());
 		Credentials credentials = GoogleCredentials.fromStream(googleJson.getInputStream());
 		StorageOptions.Builder storageBuilder = StorageOptions.newBuilder();

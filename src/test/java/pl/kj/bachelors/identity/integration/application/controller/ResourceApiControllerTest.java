@@ -1,7 +1,12 @@
 package pl.kj.bachelors.identity.integration.application.controller;
 
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
@@ -15,6 +20,8 @@ import java.io.File;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -22,10 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ResourceApiControllerTest extends BaseIntegrationTest {
-    @MockBean private UploadedFileRepository uploadedFileRepository;
-
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private UploadedFileRepository repository;
+
+    @Autowired
+    private Storage storage;
 
     private MockMultipartFile file;
     @BeforeEach
@@ -49,18 +59,13 @@ public class ResourceApiControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        assertThat(mvcResult.getResponse().getContentAsString()).contains("created_id");
+        assertThat(mvcResult.getResponse().getContentAsString()).contains("file_name");
+        assertThat(mvcResult.getResponse().getContentAsString()).contains("media_type");
     }
 
     @Test
     public void testGetParticular() throws Exception {
-        var uploadedFile = new UploadedFile();
-        uploadedFile.setFileName("World");
-        uploadedFile.setOriginalFileName("Hello");
-        uploadedFile.setId(1);
-        uploadedFile.setMediaType("application/json");
-
-        given(this.uploadedFileRepository.findById(1)).willReturn(Optional.of(uploadedFile));
+        var uploadedFile = this.repository.findById(1).orElseThrow();
 
         MvcResult mvcResult = mockMvc.perform(get("/v1/resources/1"))
                 .andExpect(status().isOk())
@@ -68,39 +73,22 @@ public class ResourceApiControllerTest extends BaseIntegrationTest {
 
         assertThat(mvcResult.getResponse().getContentAsString())
                 .contains("1")
-                .contains("Hello")
-                .contains("application/json");
+                .contains("or-filename.jpg")
+                .contains("image/jpg");
     }
 
     @Test
     public void testDownload() throws Exception {
-        File tempFile = File.createTempFile("temp-", "-testing.png");
-        var uploadedFile = new UploadedFile();
-        uploadedFile.setFileName(tempFile.getName());
-        uploadedFile.setDirectory(tempFile.getParent());
-        uploadedFile.setOriginalFileName("original_text");
-        uploadedFile.setMediaType("image/png");
-        uploadedFile.setId(1);
-        given(this.uploadedFileRepository.findById(1)).willReturn(Optional.of(uploadedFile));
+        var uploadedFile = this.repository.findById(1).orElseThrow();
 
         mockMvc.perform(get("/v1/resources/1/download"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("image/png"));
-
-        tempFile.deleteOnExit();
+                .andExpect(content().contentType("image/jpg"));
     }
 
     @Test
     public void testDownload_FileNotExists() throws Exception {
-        var uploadedFile = new UploadedFile();
-        uploadedFile.setFileName("not-exists");
-        uploadedFile.setDirectory("/thisfile");
-        uploadedFile.setOriginalFileName("original_text");
-        uploadedFile.setMediaType("image/png");
-        uploadedFile.setId(1);
-        given(this.uploadedFileRepository.findById(1)).willReturn(Optional.of(uploadedFile));
-
-        mockMvc.perform(get("/v1/resources/1/download"))
+        mockMvc.perform(get("/v1/resources/-5/download"))
                 .andExpect(status().isNotFound());
     }
 

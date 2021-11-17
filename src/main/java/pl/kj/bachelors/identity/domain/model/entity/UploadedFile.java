@@ -10,7 +10,6 @@ public class UploadedFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String directory;
     @Column(name = "file_name")
     private String fileName;
     @Column(name = "original_file_name")
@@ -22,14 +21,6 @@ public class UploadedFile {
 
     public UploadedFile() {
         this.audit = new Audit();
-    }
-
-    public String getDirectory() {
-        return directory;
-    }
-
-    public void setDirectory(String directory) {
-        this.directory = directory;
     }
 
     public String getFileName() {
