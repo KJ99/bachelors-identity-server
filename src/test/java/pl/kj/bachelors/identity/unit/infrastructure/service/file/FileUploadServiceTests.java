@@ -1,13 +1,9 @@
 package pl.kj.bachelors.identity.unit.infrastructure.service.file;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import pl.kj.bachelors.identity.BaseTest;
@@ -16,10 +12,8 @@ import pl.kj.bachelors.identity.infrastructure.service.file.FileUploadService;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class FileUploadServiceTests extends BaseTest {
     @Autowired

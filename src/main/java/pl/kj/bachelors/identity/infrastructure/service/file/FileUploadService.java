@@ -6,7 +6,6 @@ import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.kj.bachelors.identity.domain.config.UploadConfig;
 import pl.kj.bachelors.identity.domain.exception.AggregatedApiError;
 import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;

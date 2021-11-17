@@ -1,6 +1,5 @@
 package pl.kj.bachelors.identity.application.controller;
 
-import com.google.cloud.storage.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,7 +28,6 @@ import pl.kj.bachelors.identity.domain.model.entity.UploadedFile;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.service.file.FileReader;
 import pl.kj.bachelors.identity.domain.service.file.FileUploader;
-import pl.kj.bachelors.identity.infrastructure.config.GoogleStorageConfig;
 import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 
 import java.io.IOException;
