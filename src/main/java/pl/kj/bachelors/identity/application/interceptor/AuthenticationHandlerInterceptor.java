@@ -100,10 +100,8 @@ public class AuthenticationHandlerInterceptor implements HandlerInterceptor {
                     )
             );
             result = true;
-        } catch (JwtInvalidException e) {
-            result = this.handleInvalidToken(auth, response, HttpStatus.FORBIDDEN, "");
-        } catch (ExpiredJwtException e) {
-            result = this.handleInvalidToken(auth, response, HttpStatus.FORBIDDEN, this.createTokenExpiredResponse());
+        } catch (Exception e) {
+            result = this.handleInvalidToken(auth, response, HttpStatus.UNAUTHORIZED, "");
         }
 
         return result;

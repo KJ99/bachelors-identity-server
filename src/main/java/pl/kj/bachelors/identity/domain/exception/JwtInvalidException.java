@@ -1,6 +1,6 @@
 package pl.kj.bachelors.identity.domain.exception;
 
-public class JwtInvalidException extends Throwable {
+public class JwtInvalidException extends Exception {
     public JwtInvalidException() {
         super("JWT is not valid");
     }
