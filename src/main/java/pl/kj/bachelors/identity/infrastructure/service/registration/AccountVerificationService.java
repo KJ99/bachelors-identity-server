@@ -4,6 +4,7 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.kj.bachelors.identity.domain.config.ApiConfig;
 import pl.kj.bachelors.identity.domain.config.VerificationConfig;
 import pl.kj.bachelors.identity.domain.exception.ValidationViolation;
 import pl.kj.bachelors.identity.domain.model.entity.User;
@@ -22,17 +23,20 @@ public class AccountVerificationService implements AccountVerifier {
     private final UserVerificationRepository verificationRepository;
     private final TokenGenerationService tokenGenerator;
     private final VerificationConfig verificationConfig;
+    private final ApiConfig apiConfig;
 
     @Autowired
     public AccountVerificationService(
             UserRepository userRepository,
             UserVerificationRepository verificationRepository,
             TokenGenerationService tokenGenerator,
-            VerificationConfig verificationConfig) {
+            VerificationConfig verificationConfig,
+            ApiConfig apiConfig) {
         this.userRepository = userRepository;
         this.verificationRepository = verificationRepository;
         this.tokenGenerator = tokenGenerator;
         this.verificationConfig = verificationConfig;
+        this.apiConfig = apiConfig;
     }
 
     @Override
@@ -80,13 +84,13 @@ public class AccountVerificationService implements AccountVerifier {
         UserVerification verification = this.verificationRepository.findByToken(token)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         if(verification.getUser().isVerified()) {
-            throw new ValidationViolation("User is already verified", "ID.023", null);
+            throw new ValidationViolation(this.apiConfig.getErrors().get("ID.009"), "ID.009", null);
         }
         if(verification.getExpiresAt().getTimeInMillis() < Calendar.getInstance().getTimeInMillis()) {
-            throw new ValidationViolation("PIN has been expired", "ID.022", "pin");
+            throw new ValidationViolation(this.apiConfig.getErrors().get("ID.008"), "ID.008", "pin");
         }
         if(!verification.getPin().equals(pin)) {
-            throw new ValidationViolation("Invalid verification PIN", "ID.021", "pin");
+            throw new ValidationViolation(this.apiConfig.getErrors().get("ID.007"), "ID.007", "pin");
         }
 
         User user = verification.getUser();

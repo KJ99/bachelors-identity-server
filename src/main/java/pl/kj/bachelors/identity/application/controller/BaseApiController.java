@@ -157,10 +157,10 @@ abstract class BaseApiController {
         String code = null;
         String path = null;
         if (this.isMessageContaining(specificMessage, "UN_EMAIL")) {
-            code = "ID.012";
+            code = "ID.006";
             path = "email";
         } else if (this.isMessageContaining(specificMessage, "UN_USERNAME")) {
-            code = "ID.011";
+            code = "ID.005";
             path = "username";
         }
 

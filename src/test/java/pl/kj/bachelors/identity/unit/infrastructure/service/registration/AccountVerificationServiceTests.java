@@ -103,7 +103,7 @@ class AccountVerificationServiceTests extends BaseTest {
 
         ValidationViolation violation = (ValidationViolation) thrown;
 
-        assertThat(violation.getCode()).isEqualTo("ID.021");
+        assertThat(violation.getCode()).isEqualTo("ID.007");
         assertThat(violation.getPath()).isEqualTo("pin");
     }
 
@@ -117,7 +117,7 @@ class AccountVerificationServiceTests extends BaseTest {
 
         ValidationViolation violation = (ValidationViolation) thrown;
 
-        assertThat(violation.getCode()).isEqualTo("ID.022");
+        assertThat(violation.getCode()).isEqualTo("ID.008");
         assertThat(violation.getPath()).isEqualTo("pin");
 
     }
@@ -132,7 +132,7 @@ class AccountVerificationServiceTests extends BaseTest {
 
         ValidationViolation violation = (ValidationViolation) thrown;
 
-        assertThat(violation.getCode()).isEqualTo("ID.023");
+        assertThat(violation.getCode()).isEqualTo("ID.009");
 
     }
 

@@ -144,26 +144,6 @@ public class ProfileApiControllerTests extends BaseIntegrationTest {
     }
 
     @Test
-    public void testPatch_Forbidden() throws Exception {
-        String patchString = String.format(
-                "[" +
-                        "{\"op\": \"replace\", \"path\": \"/first_name\", \"value\": \"%s\"}," +
-                        "{\"op\": \"add\", \"path\": \"/picture_id\", \"value\": \"%d\"}" +
-                        "]",
-                "Roman",
-                1
-        );
-        String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateExpiredAccessToken("uid-active-1"));
-
-        this.mockMvc.perform(
-                patch("/v1/profile")
-                        .contentType("application/json")
-                        .content(patchString.getBytes(StandardCharsets.UTF_8))
-                        .header(HttpHeaders.AUTHORIZATION, auth)
-        ).andExpect(status().isForbidden());
-    }
-
-    @Test
     public void testGet() throws Exception {
         String auth = String.format("%s %s", this.jwtConfig.getType(), this.generateValidAccessToken("uid-active-1"));
 
