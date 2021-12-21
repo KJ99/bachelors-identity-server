@@ -2,8 +2,8 @@ package pl.kj.bachelors.identity.domain.exception;
 
 import pl.kj.bachelors.identity.domain.model.entity.UserVerification;
 
-public class AccountNotVerifiedException extends Throwable {
-    private String code = "ID.031";
+public class AccountNotVerifiedException extends Exception {
+    private String code = "ID.010";
     protected String message = "Account is not verified. Please verify your account in order to sign in";
     private UserVerification latestVerification;
 

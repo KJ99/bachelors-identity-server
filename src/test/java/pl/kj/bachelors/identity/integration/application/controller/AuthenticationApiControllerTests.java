@@ -160,7 +160,7 @@ public class AuthenticationApiControllerTests extends BaseIntegrationTest {
         ).andExpect(status().isForbidden()).andReturn();
 
         assertThat(result.getResponse().getContentAsString())
-                .contains("ID.031")
+                .contains("ID.010")
                 .contains("verification_token");
 
     }

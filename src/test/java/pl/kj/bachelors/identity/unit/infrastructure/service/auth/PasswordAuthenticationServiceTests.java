@@ -59,7 +59,7 @@ public class PasswordAuthenticationServiceTests extends BaseTest {
 
         assertThat(thrown).isInstanceOf(AccountNotVerifiedException.class);
         AccountNotVerifiedException ex = (AccountNotVerifiedException) thrown;
-        assertThat(ex.getCode()).isEqualTo("ID.031");
+        assertThat(ex.getCode()).isEqualTo("ID.010");
         assertThat(ex.getLatestVerification()).isNotNull();
         assertThat(ex.getLatestVerification().getToken()).isEqualTo(verification.getToken());
     }

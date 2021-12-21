@@ -54,5 +54,9 @@ api:
     ID.002: Provided value is too short or too long
     ID.003: Password should have length between 6 and 128 characters, at least one uppercase letter, lowercase letter, digit and special character
     ID.004: Passwords are not match
-    ID.011: This user name is already taken
-    ID.012: This email address is already taken
+    ID.005: This user name is already taken
+    ID.006: This email address is already taken
+    ID.007: Invalid verification PIN
+    ID.008: PIN has been expired
+    ID.009: User is already verified
+    ID.010: Account is not verified. Please verify your account in order to sign in
