@@ -34,7 +34,7 @@ public class ServerConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/v1/*").allowedOrigins("*");
+                registry.addMapping("/v1").allowedOrigins("*");
             }
         };
     }
