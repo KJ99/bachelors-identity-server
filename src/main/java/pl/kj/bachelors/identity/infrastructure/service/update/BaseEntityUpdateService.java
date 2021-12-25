@@ -40,7 +40,9 @@ public abstract class BaseEntityUpdateService<T, PK, U, R extends JpaRepository<
         U updateModel = this.objectMapper.treeToValue(patched, updateModelClass);
         this.ensureThatModelIsValid(updateModel);
 
+        this.preUpdate(original, updateModel);
         this.applyUpdateModel(original, updateModel);
+        this.postUpdate(original);
         this.repository.save(original);
     }
 
@@ -53,6 +55,9 @@ public abstract class BaseEntityUpdateService<T, PK, U, R extends JpaRepository<
             throw ex;
         }
     }
+
+    protected void preUpdate(T original, U model) {}
+    protected void postUpdate(T original) {}
 
     protected void applyUpdateModel(T original, U updateModel) {
         this.modelMapper.map(updateModel, original);

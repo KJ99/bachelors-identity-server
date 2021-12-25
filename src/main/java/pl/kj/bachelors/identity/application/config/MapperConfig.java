@@ -73,6 +73,7 @@ public class MapperConfig {
             @Override
             protected void configure() {
                 map().setId(source.getUid());
+                map().setUsername(source.getUserName());
                 using(ctx -> {
                     User src = (User) ctx.getSource();
                     UriComponentsBuilder uriBuilder = UriComponentsBuilder
@@ -87,6 +88,11 @@ public class MapperConfig {
                             .toUriString()
                             : null;
                 }).map(source, destination.getPictureUrl());
+
+                using(ctx -> {
+                    User src = (User) ctx.getSource();
+                    return src.getPicture() != null ? src.getPicture().getId() : null;
+                }).map(source, destination.getPictureId());
             }
         });
 
@@ -128,9 +134,13 @@ public class MapperConfig {
                 map().setUserName(source.getUsername());
                 using(ctx -> {
                     UserUpdateModel src = (UserUpdateModel) ctx.getSource();
-                    UploadedFile file = new UploadedFile();
-                    file.setId(src.getPictureId());
-                    return src.getPictureId() != null ? file : null;
+                    UploadedFile file = null;
+                    if(src.getPictureId() != null) {
+                        file = new UploadedFile();
+                        file.setId(src.getPictureId());
+                    }
+
+                    return file;
                 }).map(source, destination.getPicture());
             }
         });
