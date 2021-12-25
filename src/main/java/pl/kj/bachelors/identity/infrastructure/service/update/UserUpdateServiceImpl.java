@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import pl.kj.bachelors.identity.domain.model.entity.User;
 import pl.kj.bachelors.identity.domain.model.update.UserUpdateModel;
 import pl.kj.bachelors.identity.domain.service.update.UserUpdateService;
+import pl.kj.bachelors.identity.infrastructure.repository.UploadedFileRepository;
 import pl.kj.bachelors.identity.infrastructure.repository.UserRepository;
 import pl.kj.bachelors.identity.infrastructure.service.ValidationService;
 
 @Service
 public class UserUpdateServiceImpl extends BaseEntityUpdateService<User, String, UserUpdateModel, UserRepository> implements UserUpdateService {
-
     @Autowired
     protected UserUpdateServiceImpl(
             UserRepository repository,

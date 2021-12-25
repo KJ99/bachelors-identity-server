@@ -2,6 +2,8 @@ package pl.kj.bachelors.identity.application.dto.response;
 
 public class ProfileResponse {
     private String id;
+    private String username;
+    private Integer pictureId;
     private String firstName;
     private String lastName;
     private String pictureUrl;
@@ -45,5 +47,21 @@ public class ProfileResponse {
 
     public void setSettings(UserSettingsResponse settings) {
         this.settings = settings;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Integer getPictureId() {
+        return pictureId;
+    }
+
+    public void setPictureId(Integer pictureId) {
+        this.pictureId = pictureId;
     }
 }
